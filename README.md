@@ -16,6 +16,25 @@ By analyzing beer preferences over time—using more than 15 years of reviews—
 
 ## Proposed additional datasets
 
+### 1. President Dataset
+
+> MIT Election Data and Science Lab, 2017, "U.S. President 1976–2020", https://doi.org/10.7910/DVN/42MVDX, Harvard Dataverse, V8; 1976-2020-president.tab
+
+This dataset contains results of presidental elections (number of votes per each candidate) per state from 1976 to 2020.
+
+After analyzing the dataset, we first assessed its completeness. We found that it includes data for all 51 states for each year, with no missing or empty values. For our analysis, we will use only a subset of this dataset, focusing on the entries from 2001 to 2017, specifically the election years 2004, 2008, 2012, and 2016, to align with the beer reviews we have.
+
+
+> some ideas on how you expect to get, manage, process, and enrich it/them. Show us that you’ve read the docs and some examples, and that you have a clear idea on what to expect. Discuss data size and format if relevant. It is your responsibility to check that what you propose is feasible.
+
+This dataset has the advantage to be quite lightweight (501KB CSV file with 4288) and easy to manipulate.
+Our first idea to play with this dataset is to calculate some statistics.
+
+First, we were interested in the proportion of votes for each party per state over the years.
+Then we were curious to evaluate what are the "swing" states this dataset would give. 
+
+### 2. Another dataset???
+
 ## Methods
 
 ## Proposed timeline
