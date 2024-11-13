@@ -17,23 +17,38 @@ By analyzing beer preferences over time—using more than 15 years of reviews—
 
 ## Proposed additional datasets
 
-### 1. President Dataset
+### 1. U.S. President Dataset
 
 > MIT Election Data and Science Lab, 2017, "U.S. President 1976–2020", https://doi.org/10.7910/DVN/42MVDX, Harvard Dataverse, V8; 1976-2020-president.tab
 
 This dataset contains results of presidental elections (number of votes per each candidate) per state from 1976 to 2020.
 
-After analyzing the dataset, we first assessed its completeness. We found that it includes data for all 50 states for each year, with no missing or empty values. For our analysis, we will use only a subset of this dataset, focusing on the entries from 2001 to 2017, specifically the election years 2004, 2008, 2012, and 2016, to align with the beer reviews we have.
+After analyzing the dataset, we first assessed its completeness. We found that it includes data for all 50 states for each year, with no missing or empty values.
+For our analysis, we will use only a subset of this dataset, focusing on the entries from 2001 to 2017, specifically the election years 2004, 2008, 2012, and 2016, to align with the beer reviews we have.
 
-This dataset has the advantage to be quite lightweight (501KB CSV file with 4288) and easy to manipulate.
+This dataset has the advantage to be quite lightweight (501KB CSV file with 4288 lines) and easy to manipulate.
 Our first idea to play with this dataset is to calculate some statistics.
+We were first interested in the proportion of votes for each party per state over the years.
+Then we were curious to evaluate what are the "swing" states this dataset would give (states that changed party).
 
-First, we were interested in the proportion of votes for each party per state over the years.
-Then we were curious to evaluate what are the "swing" states this dataset would give. 
+### 2. The Correlates of State Policy Dataset
 
-### 2. Another dataset??? 3000 variables MIKAEL TAKE CARE OF THIS!! 
+> Grossmann, M., Jordan, M. P. and McCrain, J. (2021) “The Correlates of State Policy and the Structure of State Panel Data,” State Politics & Policy Quarterly. Cambridge University Press, pp. 1–21. doi: 10.1017/spq.2021.17.
+
+The Correlates of State Policy dataset includes more than 3000 variables, with observations across the 50 U.S. states and across time (1900–2019, approximately).
+These variables represent policy outputs, as well as political, social, and economic factors that may influence policy differences.
+
+For our analysis, we are particularly interested in variables such as the population within certain age groups (e.g., 18-24 years old, 25-44 years old, etc.), the minimum legal drinking age in each state, etc.
+
+The dataset is provided as a CSV file (~70 MB). Upon first inspection, we observed that it contains a lot of missing ("NA") values. Along this dataset, there is a PDF document that gives clear definitions for each of the 3000+ variables, along with information on the years for which data is available.
+Given that some variables include data going back to the early 20th century, it is likely that this is the reason why there is a large number of "NA" values.
+However, after reviewing the documentation, we confirmed that the variables we are interested in have data available for our timeframe (2001-2017).
+
+Additionally, the dataset's website provides a nice interactive web application for visualizing and exploring the data: [CSPP Interactive Tool](https://cspp.ippsr.msu.edu/cspp/).
 
 ## Methods
+
+We have separated the project in 4 tasks, each of them corresponding to one of the research questions above.
 
 ### Task 1. Beer preferences and political affiliation
 
