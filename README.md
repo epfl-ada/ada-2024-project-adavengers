@@ -38,7 +38,10 @@ Then we were curious to evaluate what are the "swing" states this dataset would 
 The Correlates of State Policy dataset includes more than 3000 variables, with observations across the 50 U.S. states and across time (1900–2019, approximately).
 These variables represent policy outputs, as well as political, social, and economic factors that may influence policy differences.
 
-For our analysis, we are particularly interested in variables such as the population within certain age groups (e.g., 18-24 years old, 25-44 years old, etc.), the minimum legal drinking age in each state, etc.
+For our analysis, we are particularly interested in variables such as:
+- the population within certain age groups (e.g., 18-24 years old, 25-44 years old, etc.)
+- the minimum legal drinking age per state
+- personal income per capita
 
 The dataset is provided as a CSV file (~70 MB). Upon first inspection, we observed that it contains a lot of missing ("NA") values. Along this dataset, there is a PDF document that gives clear definitions for each of the 3000+ variables, along with information on the years for which data is available.
 Given that some variables include data going back to the early 20th century, it is likely that this is the reason why there is a large number of "NA" values.
