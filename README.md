@@ -10,7 +10,8 @@ By analyzing beer preferences over time—using more than 15 years of reviews—
 
 ## Research Questions
 
-1. How do beer preferences vary across different U.S. states, and can these preferences be linked to political ideologies? Are there specific beer styles (e.g., IPAs, lagers, stouts) that correlate with Republican or Democratic voting patterns, i.e. *what makes a beer liberal/democratic*?
+0. How can we define diverse beer preferences? Our analysis will explore preferences through various dimensions, including beer style, its origin, and the most defining attributes.
+1. How do beer preferences vary across different U.S. states, and can these preferences be linked to political ideologies? Are there specific beer preferences (e.g., style, origin, aspect) that correlate with Republican or Democratic voting patterns, i.e. *what makes a beer liberal/democratic*?
 2. How do beer preferences change over time during election years in these states, especially in states which changed the overall political affiliation between two consecutive election years, i.e. swing states? Can these changes in beer preference serve as indicators of political shifts?
 3. Is there such a thing as an *election beer*? Over what beers do people gather and discuss their political views, i.e. what are the most reviewed beers during the election period? 
 4. How does the sentiment in beer reviews vary across regions with different political leanings?
@@ -51,17 +52,18 @@ Additionally, the dataset's website provides a nice interactive web application 
 
 ## Methods
 
-We have separated the project in 4 tasks, each of them corresponding to one of the research questions above.
+We have separated the project in 5 tasks, each of them corresponding to one of the research questions above.
+
+### Task 0. Characterizing beer preferences
+
+To characterize beer preferences, we will first map the diverse beer styles in our dataset to the five most common styles based on popularity or frequency. Also, we will analyze beer reviews to identify the aspects that consistently receive the highest ratings. Finally, we will classify the beers by their origin, distinguishing between those produced by local U.S. breweries and international ones. This approach provides a comprehensive understanding of preferences across style, quality, and origin.
 
 ### Task 1. Beer preferences and political affiliation
 
 First of all, we want to determine the beer style preferences among different states, and whether it has something to do with the political affiliation of that state. We would consider some of the most popular beer styles in the U.S., i.e. the ones that are most reviewed.  
-In order to rightfully present our findings, we will have to take into account several confounding factors that could also influence beer preference as well as political leaning, such as *age, wealth, education* and *ethnicity*. Since those are unobservable confounding factors, we will take a specific approach in order to estimate them. To the best of our knowledge, there is no work done in estimating the level of education based on written text, especially reviews. We believe that even Sheakspere wouldn't write a very eloquent and elaborate beer review, thus, unfortunately we would have to disregard studying the influence of this factor. For ethnicity it is the similar issue, since we don't have a reasonable way to estimate the ethnicity of a person from reviews written in English, based in US and with relatevily random usernames of beer reviewers. Because of this, we will consider only age and wealth of a state as our confounding factor to the political affiliation and beer preference. We estimate those factors on the basis of a whole state since we aim to determine whether beer style taste differs from state to state, based on it's majority political stance.
+In order to rightfully present our findings, we will have to take into account several confounding factors that could also influence beer preference as well as political leaning, such as *age, wealth, education*, *ethnicity* as well as geographical location of the state. Since those are unobservable confounding factors, we will take a specific approach in order to estimate them. To the best of our knowledge, there is no work done in estimating the level of education based on written text, especially reviews. We believe that even Sheakspere wouldn't write a very eloquent and elaborate beer review, thus, unfortunately we would have to disregard studying the influence of this factor. For ethnicity it is the similar issue, since we don't have a reasonable way to estimate the ethnicity of a person from reviews written in English, based in US and with relatevily random usernames of beer reviewers. Because of this, we will consider only age, wealth and location of a state as our confounding factor to the political affiliation and beer preference. We estimate those factors on the basis of a whole state since we aim to determine whether beer style taste differs from state to state, based on it's majority political stance.
 As for age, we aim to determine the mean age of a state by estimating the age of users that leave reviews are registered in that state. To attain this, we will take the following approach. We will consider the minimal legal drinking age for each state and consider it as the time the user has registered to the beer rating platform. Then, we will substract the date of a review with the registration date and add the amount of passed time to the legal drinking age.  Or age from the dataset??
-As for wealth, we will use the mean income per capita of that state, which can be found in another dataset. Or, we consider an average income for people of a certain age group and then calculate a weighted average based on the amount of people from each age group. TRICKYYYYYY DISCUSS THIS!!!!   
-
-#### Maybe also add something about different aspects?
-
+As for wealth, we will use the mean income per capita of that state, which can be found in the additional dataset #2. 
 
 
 ![Confounding factors graph](confounding_factors.JPG)
