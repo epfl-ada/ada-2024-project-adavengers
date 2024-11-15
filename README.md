@@ -119,13 +119,13 @@ Tell us how the code is arranged, any explanations goes here.
 The directory structure of the project looks like this:
 
 ```
-├── data                        <- Project data files
+├── data                        <- Project data files (original data)
+│   ├── generated                        <- Generated csv/pickle files
 │
 ├── src                         <- Source code
-│   ├── data                            <- Data directory
+│   ├── data                            <- Data directory (data processing, results stored in data/generated)
 │   ├── models                          <- Model directory
 │   ├── utils                           <- Utility directory
-│   ├── scripts                         <- Shell scripts
 │
 ├── tests                       <- Tests of any kind
 │
