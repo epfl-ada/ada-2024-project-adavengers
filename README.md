@@ -94,22 +94,17 @@ ___
 
 ```bash
 # clone project
-git clone <project link>
-cd <project repo>
+git clone https://github.com/epfl-ada/ada-2024-project-adavengers.git
+cd ada-2024-project-adavengers
 
 # [OPTIONAL] create conda environment
-conda create -n <env_name> python=3.11 or ...
+conda create -n <env_name> python=3.11
 conda activate <env_name>
 
 
 # install requirements
 pip install -r pip_requirements.txt
 ```
-
-
-
-### How to use the library
-Tell us how the code is arranged, any explanations goes here.
 
 
 
