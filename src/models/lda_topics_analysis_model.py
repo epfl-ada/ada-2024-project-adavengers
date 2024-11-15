@@ -99,19 +99,3 @@ if __name__ == "__main__":
     lda_analysis.preprocess()
     lda_analysis.train_lda()
     lda_analysis.print_topics(num_words=10)
-
-"""
-[nltk_data] Downloading package stopwords to /Users/david/nltk_data...
-[nltk_data]   Package stopwords is already up-to-date!
-[nltk_data] Downloading package wordnet to /Users/david/nltk_data...
-Loaded dataset with 6 reviews.
-starting preprocess
-[nltk_data]   Package wordnet is already up-to-date!
-preprocessing completed
-LDA model training completed.
-[(0, '0.822*"software" + 0.178*"exercise"'),
- (1, '0.822*"exercise" + 0.178*"software"')]
- 
- """
-
-# as we can see the output makes sense we have a first topic about software and a second topic about exercise

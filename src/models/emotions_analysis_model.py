@@ -13,7 +13,7 @@ class EmotionsAnalysisPipeline:
         """
 
         # hardcoded list of emotions
-        self.emotions: list[str] = ["bitter", "sweet", "sour", "salty", "umami", "spicy", "metallic", "astringent"]
+        self.emotions: list[str] = ["surprise", "disgust", "happiness", "sadness", "anger", "fear", "neutral"]
         self.model: SentenceTransformer = SentenceTransformer('all-mpnet-base-v2')
 
         self.emotions_emb: Tensor = self.model.encode(self.emotions, normalize_embeddings=True)
@@ -31,5 +31,4 @@ class EmotionsAnalysisPipeline:
 
 
 if __name__ == '__main__':
-    EmotionsAnalysisPipeline().analyse("not sour at all")
-        #"Irish oddity brought back by my parents, thanks. It was decent but just OK, like most blonde ales. Beer is blonde and clear with a thin white head of medium bubbles, no lacing, minimal carbonation and retention.Aroma is weak, a little grainy a little sweet. It is OK.Beer is nice in the body, light but not dry, mildly bitter, a decent finish, no aftertaste, I don't think I'd have it again but it is probably good enough to drink more than one.")
+    EmotionsAnalysisPipeline().analyse("This beer is very surprising, I didn't expect it to be so good.")

@@ -1,0 +1,5 @@
+this folder should contain the files:
+beers.csv
+breweries.csv
+users.csv
+!gzip -dc data/BeerAdvocate/reviews.txt.gz > data/BeerAdvocate/reviewes_beer_adv.txt
