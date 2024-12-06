@@ -9,3 +9,5 @@ pandas~=2.2.2
 sentence_transformers
 ipython~=8.27.0
 sentence-transformers~=3.3.0
+plotly
+wordcloud
