@@ -1,0 +1,52 @@
+state;pop18_29_democrat;pop30_44_democrat;pop45_64_democrat;pop65_democrat;pop18_29_republican;pop30_44_republican;pop45_64_republican;pop65_republican;division;region
+Alaska;36;32;40;39;62;66;57;58;Pacific;West
+Alabama;50;41;36;22;49;56;64;78;East South Central;South
+Arkansas;49;39;40;32;49;60;57;65;West South Central;South
+Arizona;52;46;42;43;48;51;56;56;Mountain;West
+California;76;59;60;48;23;39;38;50;Pacific;West
+Colorado;NaN;53;56;44;NaN;46;42;53;Mountain;West
+Connecticut;79;61;53;NaN;18;38;42;NaN;New England;Northeast
+D.C.;95;90;92;NaN;5;7;6;NaN;South Atlantic;South
+Delaware;71;64;59;NaN;25;35;41;NaN;South Atlantic;South
+Florida;61;49;52;45;37;49;47;53;South Atlantic;South
+Georgia;48;56;42;46;51;44;58;54;South Atlantic;South
+Hawaii;82;75;68;69;18;21;30;30;Pacific;West
+Iowa;61;48;54;49;36;50;44;48;West North Central;Midwest
+Idaho;41;35;34;NaN;56;63;64;NaN;Mountain;West
+Illinois;71;66;54;55;27;33;45;45;East North Central;Midwest
+Indiana;63;47;49;37;35;52;50;61;Mountain;West
+Kansas;51;37;44;34;47;61;56;66;West North Central;Midwest
+Kentucky;51;43;39;40;48;54;61;59;East South Central;South
+Louisiana;48;44;33;29;49;55;65;69;West South Central;South
+Massachusetts;78;58;56;NaN;21;38;42;NaN;New England;Northeast
+Maryland;70;65;55;NaN;26;35;43;NaN;South Atlantic;South
+Maine;67;59;58;45;30;39;39;53;New England;Northeast
+Michigan;68;56;52;53;29;43;45;45;East North Central;Midwest
+Minnesota;65;49;51;55;34;49;47;43;West North Central;Midwest
+Missouri;59;49;47;43;39;50;52;56;West North Central;Midwest
+Mississippi;56;46;40;NaN;43;54;59;NaN;East South Central;South
+Montana;61;36;47;45;37;60;52;49;Mountain;West
+North Carolina;74;48;43;43;26;52;56;56;South Atlantic;South
+North Dakota;51;41;42;NaN;47;57;55;NaN;West North Central;Midwest
+Nebraska;54;39;39;38;43;60;60;61;West North Central;Midwest
+New Hampshire;61;51;56;56;37;48;43;43;New England;Northeast
+New Jersey;67;59;55;47;31;40;45;53;Middle Atlantic;Northeast
+New Mexico;71;50;53;52;26;48;46;47;Mountain;West
+Nevada;67;60;51;42;31;37;46;55;Mountain;West
+New York;76;61;59;55;21;39;40;43;Middle Atlantic;Northeast
+Ohio;61;51;53;44;36;47;46;55;East North Central;Midwest
+Oklahoma;40;38;29;NaN;60;61;71;NaN;West South Central;South
+Oregon;NaN;64;58;57;NaN;36;42;43;Pacific;West
+Pennsylvania;65;51;55;49;35;47;43;50;Middle Atlantic;Northeast
+Rhode Island;68;65;60; NaN;25;33;37;NaN;New England;Northeast
+South Carolina;55;54;39;33;44;46;61;66;South Atlantic;South
+South Darkota;50;41;43;45;48;55;54;55;West North Central;Midwest
+Tennesse;55;36;43;36;43;61;55;59;East South Central;South
+Texas;54;46;41;32;45;52;58;66;West South Central;South
+Utah;33;44;27;NaN;62;52;70;NaN;Mountain;West
+Virginia;60;51;51;46;39;47;48;53;South Atlantic;South
+Vermont;81;60;68;69;18;37;31;31;New England;Northeast
+Washington;NaN;59;60;52;NaN;39;38;47;Pacific;West
+Wisconsin;64;54;57;50;35;44;42;50;East North Central;Midwest
+West Virginia;47;37;44;43;52;61;55;54;South Atlantic;South
+Wyoming;35;25;37;NaN;61;74;62;NaN;Mountain;West

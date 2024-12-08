@@ -1,0 +1,18 @@
+state;pop18_29_democrat;pop30_44_democrat;pop45_64_democrat;pop65_democrat;pop18_29_republican;pop30_44_republican;pop45_64_republican;pop65_republican;division;region
+New York;72;61;52;53;25;39;47;47;Middle Atlantic;Northeast
+Massachusets;72;59;59;61;26;40;39;39;New England;Northeast
+California;58;52;60;47;39;46;38;50;Pacific;West
+Connecticut;70;56;54;44;29;43;45;55;New England;Northeast
+New Hampshire;57;45;51;52;43;53;48;47;New England;Northeast
+Wisconsin;57;44;50;54;41;56;49;46;East North Central;Midwest
+Iowa;53;44;49;51;46;55;50;48;West North Central;Midwest
+Nevada;56;47;46;50;42;51;53;50;Mountain;West
+Pennsylvania;60;48;48;52;39;51;52;47;Middle Atlantic;Northeast
+Virginia;54;40;45;51;46;59;55;49;South Atlantic;South
+Ohio;56;47;48;41;42;52;52;58;East North Central;Midwest
+Florida;58;46;42;48;41;53;57;51;South Atlantic;South
+Colorado;NaN;48;47;43;NaN;51;53;56;Mountain;West
+North Carolina;56;37;42;44;43;61;0;55;South Atlantic;South
+Arizona;48;38;42;42;50;61;55;55;Mountain;West
+Montana;51;43;46;47;48;56;53;52;Mountain;West
+Indiana;47;33;42;37;52;66;57;63;East North Central;Midwest
