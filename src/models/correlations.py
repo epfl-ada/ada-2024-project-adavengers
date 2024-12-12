@@ -15,31 +15,30 @@ def preprocess_data(data_path, path_winners, year):
     
     age_winners = pd.merge(age, party_winners[['state', 'winner']], how='inner', left_on='state', right_on='state')
 
-    # Drop ages that are out of range of interest, also division and region 
-    age_range = age_winners.drop(columns=['division', 'winner', 'region'])
+    # Drop ages that are out of age range of interest, also division and region 
+    age_range = age_winners.drop(columns=['division', 'winner', 'region', 'pop65_democrat', 'pop65_republican'])
 
     # Normalize percents
-    age_range['pop18_29_democrat'] = age_range['pop18_29_democrat'] / (age_range['pop18_29_democrat'] + age_range['pop18_29_republican'])
-    age_range['pop30_44_democrat'] = age_range['pop30_44_democrat'] / (age_range['pop30_44_democrat'] + age_range['pop30_44_republican'])
-    age_range['pop45_64_democrat'] = age_range['pop45_64_democrat'] / (age_range['pop45_64_democrat'] + age_range['pop45_64_republican'])
-    age_range['pop65_democrat'] = age_range['pop65_democrat'] / (age_range['pop65_democrat'] + age_range['pop65_republican'])
-
-    age_range['pop18_29_republican'] = 1 - age_range['pop18_29_democrat']
-    age_range['pop30_44_republican'] = 1 - age_range['pop30_44_democrat']
-    age_range['pop45_64_republican'] = 1 - age_range['pop45_64_democrat']
-    age_range['pop65_republican'] = 1 - age_range['pop65_democrat']
+    for col_ind in range(3): # we have 3 different age groups
+        column_name_democrat = age_range.columns[col_ind]
+        column_name_republican = age_range.columns[(3 + col_ind)]
+        
+        age_range[column_name_democrat] = age_range[column_name_democrat] / (age_range[column_name_democrat] + age_range[column_name_republican])
+        age_range[column_name_republican] = 1- age_range[column_name_democrat]
     
     # Standard scaling
-    scaler = StandardScaler()
-    age_range_scaled = scaler.fit_transform(age_range)
+    # scaler = StandardScaler()
+    # age_range_scaled = scaler.fit_transform(age_range)
 
     # One hot encode categorical columns
     #age_range_ohe = pd.get_dummies(age_range, columns=['region'])
 
     # Drop states that have NaN and state column
-    age_range_ohe_drop = age_range_scaled.dropna(axis=0)
+    age_range_ohe_drop = age_range.dropna(axis=0)
     age_range_ohe_drop = age_range_ohe_drop.set_index('state', drop=True)
     
+    # Adding a year as suffix to all column names
+    age_range_ohe_drop.columns = [f"{col}_{year}" for col in age_range_ohe_drop.columns]
     return age_range_ohe_drop, age_winners
 
 def compute_correlation(data):
