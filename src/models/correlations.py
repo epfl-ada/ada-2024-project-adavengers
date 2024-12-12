@@ -19,7 +19,7 @@ def preprocess_data(data_path, path_winners, year):
     age_range = age_winners.drop(columns=['division', 'winner', 'region', 'pop65_democrat', 'pop65_republican'])
 
     # Normalize percents
-    for col_ind in range(3): # we have 3 different age groups
+    for col_ind in range(1,4): # we have 3 different age groups
         column_name_democrat = age_range.columns[col_ind]
         column_name_republican = age_range.columns[(3 + col_ind)]
         
@@ -87,3 +87,22 @@ def merge_winners_and_compare(path_winners, year, correlations):
     
     return merge_winners_rename, same, different
 
+def merge_voting_by_years(path_to_data=""):
+
+    election_years = [2004, 2008, 2012, 2016]
+    path_winners = path_to_data + f"data/generated/party_winners_over_years.csv"
+    voting_data_merged = []
+
+    for ind_year, year in enumerate(election_years):
+
+        data_path = path_to_data + f"data/{year}_per_age_region.csv"
+
+        processed_data, age_winners = preprocess_data(data_path, path_winners, year)
+        
+        if(ind_year==0):
+            voting_data_merged = processed_data
+        else:
+            # Merging is inner - only the subset of states that exist in each year will be taken
+            voting_data_merged = pd.merge(voting_data_merged, processed_data, left_on='state', right_on='state')
+
+    return voting_data_merged
