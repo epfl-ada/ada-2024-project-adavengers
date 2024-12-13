@@ -28,15 +28,15 @@ def preprocess_data(data_path, path_winners, year):
     
     # Standard scaling
     age_range = age_range.set_index('state')
-    scaler = StandardScaler()
-    age_range_scaled = scaler.fit_transform(age_range)
-    age_range_scaled_df = pd.DataFrame(age_range_scaled, index=age_range.index, columns=age_range.columns)
+    # scaler = StandardScaler()
+    # age_range_scaled = scaler.fit_transform(age_range)
+    # age_range_scaled_df = pd.DataFrame(age_range_scaled, index=age_range.index, columns=age_range.columns)
 
     # One hot encode categorical columns
     #age_range_ohe = pd.get_dummies(age_range, columns=['region'])
 
     # Drop states that have NaN and state column
-    age_range_ohe_drop = age_range_scaled_df.dropna(axis=0)
+    age_range_ohe_drop = age_range.dropna(axis=0)
     # age_range_ohe_drop = age_range_ohe_drop.set_index('state', drop=True)
     
     # Adding a year as suffix to all column names
@@ -89,6 +89,54 @@ def merge_winners_and_compare(path_winners, year, correlations):
     
     return merge_winners_rename, same, different
 
+def interpolate_votes(voting_data_merged):
+    """ Interpolate voting percentages beyond election years. """
+    data_columns = None
+    data_rows = None
+    categories = ['pop18_29', 'pop30_44', 'pop45_64']
+    list_years = [2004, 2008, 2012, 2016]
+    states = voting_data_merged.index
+    for state in states:
+        for category in categories:
+        
+            state_data = voting_data_merged.loc[state]
+            categ_year = [f"{category}_democrat_{year}" for year in list_years]
+            
+            timepoints = state_data.loc[categ_year]
+            series = pd.Series(data=timepoints.values, index=list_years)
+            
+            all_years = range(min(list_years), max(list_years) + 1)
+            interpolated = series.reindex(all_years).interpolate(method='linear')
+            
+            rnm_indexes_democr = [f"{category}_democrat_{year}" for year in interpolated.index]
+            rnm_indexes_repub = [f"{category}_republican_{year}" for year in interpolated.index]
+            interpolated.index = rnm_indexes_democr
+            
+            republican = 1 - interpolated
+            republican.index = rnm_indexes_repub
+            
+            df_democr = interpolated.to_frame().T
+            df_repub = republican.to_frame().T
+            if data_columns is None:
+                data_columns = df_democr
+            
+            else:
+                data_columns = pd.concat([data_columns, df_democr], axis=1)
+            
+            data_columns = pd.concat([data_columns, df_repub], axis=1)
+        
+        if data_rows is None:
+            data_rows = data_columns
+        else:
+            data_rows = pd.concat([data_rows, data_columns], axis=0)
+        data_columns = None
+        
+    data_rows['state'] = states
+    final_data = data_rows.set_index('state')
+
+    return final_data
+    
+
 def merge_voting_by_years(path_to_data=""):
 
     election_years = [2004, 2008, 2012, 2016]
@@ -99,7 +147,7 @@ def merge_voting_by_years(path_to_data=""):
 
         data_path = path_to_data + f"data/{year}_per_age_region.csv"
 
-        processed_data, age_winners = preprocess_data(data_path, path_winners, year)
+        processed_data, _ = preprocess_data(data_path, path_winners, year)
         
         if(ind_year==0):
             voting_data_merged = processed_data
