@@ -27,15 +27,17 @@ def preprocess_data(data_path, path_winners, year):
         age_range[column_name_republican] = 1- age_range[column_name_democrat]
     
     # Standard scaling
-    # scaler = StandardScaler()
-    # age_range_scaled = scaler.fit_transform(age_range)
+    age_range = age_range.set_index('state')
+    scaler = StandardScaler()
+    age_range_scaled = scaler.fit_transform(age_range)
+    age_range_scaled_df = pd.DataFrame(age_range_scaled, index=age_range.index, columns=age_range.columns)
 
     # One hot encode categorical columns
     #age_range_ohe = pd.get_dummies(age_range, columns=['region'])
 
     # Drop states that have NaN and state column
-    age_range_ohe_drop = age_range.dropna(axis=0)
-    age_range_ohe_drop = age_range_ohe_drop.set_index('state', drop=True)
+    age_range_ohe_drop = age_range_scaled_df.dropna(axis=0)
+    # age_range_ohe_drop = age_range_ohe_drop.set_index('state', drop=True)
     
     # Adding a year as suffix to all column names
     age_range_ohe_drop.columns = [f"{col}_{year}" for col in age_range_ohe_drop.columns]
