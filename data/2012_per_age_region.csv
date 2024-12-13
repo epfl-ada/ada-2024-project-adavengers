@@ -12,8 +12,13 @@ Pennsylvania;63;55;48;43;35;43;51;57;Middle Atlantic;Northeast
 Virginia;61;54;46;46;36;44;53;54;South Atlantic;South
 Ohio;63;51;47;44;35;46;51;55;East North Central;Midwest
 Florida;66;52;48;41;32;46;52;58;South Atlantic;South
-Colorado;NaN;50;51;42;NaN;48;47;57;Mountain;West
+Colorado;70;50;51;42;26;48;47;57;Mountain;West
 North Carolina;67;51;47;35;32;48;53;64;South Atlantic;South
 Arizona;66;41;43;33;32;56;56;67;Mountain;West
 Montana;58;42;44;33;39;55;55;66;Mountain;West
 Indiana;46;48;44;34;49;49;56;65;East North Central;Midwest
+Alabama;54;40;37;23;44;57;62;77;East South Central;South
+Georgia;56;54;46;44;43;44;53;56;South Atlantic;South
+South Carolina;43;50;42;40;53;48;57;60;South Atlantic;South
+Kentucky;49;43;27;36;45;55;71;63;East South Central;South
+Texas;57;49;44;41;40;49;55;58;West South Central;South
