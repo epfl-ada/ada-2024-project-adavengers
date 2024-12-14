@@ -2,16 +2,159 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-def plot_beer_pref_trends(beer_ratings, states):
+import plotly.graph_objects as go 
+from dash import Dash, dcc, html 
+from dash.dependencies import Input, Output
+from scipy.stats import pearsonr, spearmanr
+
+def get_beer_styles_data(results, state, beer_style, year_list):
+        
+        style_names = [f"{beer_style}_{year}" for year in year_list]
+        return results.loc[state, style_names]
+
+class BeerStyleTrendsDashApp:
+    def __init__(self, beer_preferences, winners, get_beer_styles_data):
+        
+        # Initialize the App
+        self.app = Dash(__name__)
+        self.beer_preferences = beer_preferences
+        self.styles = ['IPA', 'Lager', 'Other Ale', 'Pale Ale', 'Pilsner', 'Porter', 'Red/Amber Ale', 'Stout']
+        self.election_winners_by_state = winners.groupby('state').apply(lambda group: dict(zip(group['year'], group['winner']))).to_dict()
+        self.year_list = list(np.arange(2004, 2017, 1, dtype=int))
+        self.election_years = [2004, 2008, 2012, 2016]
+        self.get_beer_styles_data = get_beer_styles_data
+        
+        self.setup_layout()
+        
+    def setup_layout(self):
+        
+        # Build the layout for the app
+        pre_def_pearson, _ = pearsonr(self.get_beer_styles_data(self.beer_preferences, 'New York', 'IPA', self.year_list), self.get_beer_styles_data(self.beer_preferences, 'California', 'IPA', self.year_list))
+        pre_def_spearman, _ = spearmanr(self.get_beer_styles_data(self.beer_preferences, 'New York', 'IPA', self.year_list), self.get_beer_styles_data(self.beer_preferences, 'California', 'IPA', self.year_list))
+        
+        self.app.layout = html.Div([
+            html.H1("Beer Style Ratings by State", style={"color": "white"}),
+
+            html.Div([
+                html.Div([
+                    html.Div("State 1:", style={"color": "white"}),
+                    dcc.Dropdown(id='state1-dropdown',
+                         options=[{'label': state, 'value': state} for state in self.beer_preferences.index],
+                         value='New York',
+                         style={'width': '100%'})
+                        ], style={'width': '30%'}),  
+
+            html.Div([
+                html.Div("State 2:", style={"color": "white"}),
+                dcc.Dropdown(id='state2-dropdown',
+                         options=[{'label': state, 'value': state} for state in self.beer_preferences.index],
+                         value='California',
+                         style={'width': '100%'})
+                        ], style={'width': '30%'}),  
+
+            html.Div([
+                html.Div("Beer style:", style={"color": "white"}),
+                dcc.Dropdown(id='style-dropdown',
+                    options=[{'label': style, 'value': style} for style in self.styles],
+                    value='IPA',  
+                    style={'width': '100%'})
+                    ], style={'width': '30%'}),  
+            ], style={'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'space-between', 'marginBottom': '20px'}),
+
+            html.Div([
+                html.Div([
+                    html.Div(f"Pearson Correlation: {pre_def_pearson:.2f}", id='pearson-output',
+                     style={'margin': '10px', 'fontWeight': 'bold', "color": "white"})
+                    ], style={'width': '48%'}),  
+
+                html.Div([
+                    html.Div(f"Spearman Correlation: {pre_def_spearman:.2f}", id='spearman-output',
+                     style={'margin': '10px', 'fontWeight': 'bold', "color": "white"})
+                    ], style={'width': '48%'}),  
+            ], style={'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'space-between'}),
+    
+            dcc.Graph(id='beer-ratings-graph')
+            ])
+        
+        self.setup_callbacks()
+    
+    def setup_callbacks(self):
+        
+        @self.app.callback(
+        [
+            Output('beer-ratings-graph', 'figure'),
+            Output('pearson-output', 'children'),
+            Output('spearman-output', 'children')
+        ],
+        [
+            Input('state1-dropdown', 'value'),
+            Input('state2-dropdown', 'value'),
+            Input('style-dropdown', 'value')
+        ]
+        )
+        def update_graph_and_correlation(state1, state2, style):
+            # Beer ratings
+            trace_state1 = go.Scatter(x=self.year_list, y=self.get_beer_styles_data(self.beer_preferences, state1, style, self.year_list), mode='lines', name=f"{state1}_{style}")
+            trace_state2 = go.Scatter(x=self.year_list, y=self.get_beer_styles_data(self.beer_preferences, state2, style, self.year_list), mode='lines', name=f"{state2}_{style}")
+
+            # Election traces
+            election_results_state_1 = go.Scatter(
+                x=self.election_years,
+                y=self.get_beer_styles_data(self.beer_preferences, state1, style, self.election_years),
+                mode='markers',
+                marker=dict(size=10, color=['blue' if self.election_winners_by_state[state1][year] == 'Democrat' else 'red' for year in self.election_years]),
+                hovertext=[self.election_winners_by_state[state1][year] for year in self.election_years], hoverinfo='text',
+                showlegend=False)
+    
+            election_results_state_2 = go.Scatter(
+                x=self.election_years,
+                y=self.get_beer_styles_data(self.beer_preferences, state2, style, self.election_years),
+                mode='markers',
+                marker=dict(size=10, color=['blue' if self.election_winners_by_state[state2][year] == 'Democrat' else 'red' for year in self.election_years]),
+                hovertext=[self.election_winners_by_state[state2][year] for year in self.election_years], 
+                hoverinfo='text',
+                showlegend=False)
+    
+    
+            pearsoncorr, _ = pearsonr(self.get_beer_styles_data(self.beer_preferences, state1, style, self.year_list), self.get_beer_styles_data(self.beer_preferences, state2, style, self.year_list))
+            spearmancorr, _ = spearmanr(self.get_beer_styles_data(self.beer_preferences, state1, style, self.year_list), self.get_beer_styles_data(self.beer_preferences, state2, style, self.year_list))
+    
+            pearson_text = f"Pearson Correlation: {pearsoncorr:.2f}"
+            spearman_text = f"Spearman Correlation: {spearmancorr:.2f}"
+    
+            figure = {
+                'data': [trace_state1, trace_state2, election_results_state_1, election_results_state_2],
+                'layout': go.Layout(
+                    title=f"Beer Style Ratings: {style}",
+                    xaxis={'title': 'Year'},
+                    yaxis={'title': 'Rating'},
+                    showlegend=True
+                )
+            }
+    
+            return figure, pearson_text, spearman_text
+    
+    def run(self):
+        # Run App
+        self.app.run_server(mode='inline')
+
+
+def plot_beer_pref_trends(beer_ratings, winners, states):
     """ For the specified states plot beer trends for each beer styles. """
     styles = ['IPA', 'Lager', 'Other Ale', 'Pale Ale', 'Pilsner', 'Porter', 'Red/Amber Ale', 'Stout']
     year_list = list(np.arange(2004, 2017, 1, dtype=int))
 
     # Identify the states of interest
     states_interest = beer_ratings.loc[states]
+    
+    # Modify winners to be in adequate form for plotting
+    winners_interest = winners.loc[states]
+    election_winners_by_state = winners_interest.groupby('state').apply(lambda group: dict(zip(group['year'], group['winner']))).to_dict()
+    election_colors = {'Republican': 'red', 'Democrat': 'blue'}
+    election_years = [2004, 2008, 2012, 2016]
 
     # Create grid for plotting 
-    _, axes = plt.subplots(4, 2, figsize=(12, 14))
+    _, axes = plt.subplots(4, 2, figsize=(12, 16))
     axes = axes.flatten()
 
     for i, style in enumerate(styles):
@@ -26,10 +169,17 @@ def plot_beer_pref_trends(beer_ratings, states):
         for index, row in beer_styles.iterrows():
             ax.plot(year_list, row, label=f"{index}")
             
+            # Add winners for election years
+            for election_year in election_years:
+                winner = election_winners_by_state[index].get(election_year)
+                ax.scatter(election_year, row.iloc[year_list.index(election_year)], color=election_colors[winner], s=50)
+                ax.text(election_year, row.iloc[year_list.index(election_year)] + 0.005, winner,
+                    color=election_colors[winner], fontsize=8, ha='center')         
+            
         ax.set_title(f"Trend in average ratings of {style} beer preferences")
         ax.set_xlabel('Years')
         ax.set_ylabel('Average ratings')
-        ax.legend(title='States', fontsize=8, loc='upper left')
+        ax.legend(title='States', fontsize=8, loc='best')
         ax.grid(True)
         
     # Adjust layout

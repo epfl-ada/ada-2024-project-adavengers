@@ -2,6 +2,19 @@ import pathlib
 
 import pandas as pd
 
+def state_winner_years(path_winners):
+    """ From party_winners_over_years.csv extract state, year and winner. """
+    
+    # Load the data
+    winners = pd.read_csv(path_winners)
+    
+    winners['state'] = winners['state'].str.title()
+    winners['winner'] = winners['winner'].str.title()
+    
+    winners_columns = winners[['state', 'winner', 'year']]
+    winners_idx = winners_columns.set_index('state')
+    
+    return winners_idx
 
 class PartyWinnersParser:
     """
