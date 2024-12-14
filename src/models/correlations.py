@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import StandardScaler
 import numpy as np
+import plotly.express as px
 
 def preprocess_data(data_path, path_winners, year):
     """ Preprocess data - calculate to sum to one. Remove columns that are not in our interest. """
@@ -156,3 +157,63 @@ def merge_voting_by_years(path_to_data=""):
             voting_data_merged = pd.merge(voting_data_merged, processed_data, left_on='state', right_on='state')
 
     return voting_data_merged
+
+# Visualizations
+
+def reshape_data(df, years, age_groups):
+    """Reshape the data into long format for plotting when State is the index."""
+    records = []
+    for year in years:
+        for age_group in age_groups:
+            dem_col = f"pop{age_group}_democrat_{year}"
+            rep_col = f"pop{age_group}_republican_{year}"
+            for state in df.index:  # Use the index directly
+                records.append({
+                    "State": state,
+                    "Age_Group": age_group.replace('_', '-'),
+                    "Year": year,
+                    "Party": "Democrat",
+                    "Value": df.loc[state, dem_col],
+                })
+                records.append({
+                    "State": state,
+                    "Age_Group": age_group.replace('_', '-'),
+                    "Year": year,
+                    "Party": "Republican",
+                    "Value": df.loc[state, rep_col],
+                })
+    return pd.DataFrame(records)
+
+def plot_vote_distribution(data, age_groups, years):
+    # Reshape data
+    reshaped_data = reshape_data(data, years, age_groups)
+    # Create the plot
+    fig = px.bar(
+        reshaped_data,
+        x="State",
+        y="Value",
+        color="Party",  # Color split for Democrat and Republican
+        barmode="stack",  # Stacked bar sections
+        facet_col="Age_Group",  # Separate subplots for each age group
+        animation_frame="Year",  # Interactive slider for years
+        title="Vote Distribution by State, Age Group, and Year",
+        labels={"Value": "Vote Share", "State": "", "Age_Group": "Age Group"},
+        height=450
+    )
+
+    # Adjust layout for better spacing
+    fig.update_layout(
+        xaxis_tickangle=-45,  
+        title_x=0.5,          
+        bargap=0.4,           
+    )
+
+    # Adjust x-axes for each age group
+    for i in range(len(age_groups)):
+        fig.update_xaxes(
+            tickangle=-45,         
+            row=1, col=i + 1
+        )
+
+    # Show the interactive plot
+    fig.show()
