@@ -2,7 +2,7 @@ import pathlib
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
 
-class AgeFromReviews:
+class Reviews:
     """
     Pipeline for generating Age column from Users and their Reviews. 
     """
@@ -146,22 +146,17 @@ class AgeFromReviews:
             
             filter_year = filter_states[filter_states['year'] == year].drop(columns=['year'])
             filter_year_pivot = pd.pivot_table(filter_year, values='avg_rating', index='state', columns='general_style')
-            
-            # Scale columns
-            scaler = StandardScaler()
-            filter_scaled = scaler.fit_transform(filter_year_pivot)
-            filter_scaled_df = pd.DataFrame(filter_scaled, index=filter_year_pivot.index, columns=filter_year_pivot.columns)
         
             # Rename columns
-            columns = filter_scaled_df.columns
-            filter_scaled_df.columns = [f"{col}_{year}" for col in columns] 
+            columns = filter_year_pivot.columns
+            filter_year_pivot.columns = [f"{col}_{year}" for col in columns] 
             
             if merged_df is None:
-                merged_df = filter_scaled_df
+                merged_df = filter_year_pivot
                 
             else:
                 # Merge with the existing merged_df on 'state'
-                merged_df = pd.merge(merged_df, filter_scaled_df, on='state', how='outer')
+                merged_df = pd.merge(merged_df, filter_year_pivot, on='state', how='outer')
             
         
         return merged_df 
