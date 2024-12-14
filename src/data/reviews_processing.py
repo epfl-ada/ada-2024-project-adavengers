@@ -122,7 +122,7 @@ class Reviews:
         
         return filt_new
     
-    def aggregate_preferences_year(self, years):
+    def aggregate_preferences_year(self, years, all_states=False):
         """
         Aggregate preferences for the specified year for beer styles that we identified.
         """
@@ -134,11 +134,14 @@ class Reviews:
         results_groupped_by = reviews_style.groupby(by=['state', 'year', 'general_style'], group_keys=False).agg(avg_rating=pd.NamedAgg(column='rating', aggfunc='mean')).reset_index()
         
         # Overlapping states for all years 
-        states = ['New York', 'California', 'New Hampshire', 'Wisconsin', 'Nevada', 'Pennsylvania', 'Virginia', 'Ohio', 'Florida', 'North Carolina', 'Arizona', 'Indiana', 'Georgia', 'Texas', 'South Carolina', 'Iowa', 'Kentucky']
-        
-        # Extract reviews coming from these states and from the specified year 
-        filter_states = results_groupped_by[results_groupped_by['state'].isin(states)]
-        
+        if not all_states:
+            states = ['New York', 'California', 'New Hampshire', 'Wisconsin', 'Nevada', 'Pennsylvania', 'Virginia', 'Ohio', 'Florida', 'North Carolina', 'Arizona', 'Indiana', 'Georgia', 'Texas', 'South Carolina', 'Iowa', 'Kentucky']
+            # Extract reviews coming from these states and from the specified year 
+            filter_states = results_groupped_by[results_groupped_by['state'].isin(states)]
+        else:
+            # We use all the states
+            filter_states = results_groupped_by
+            
         # For mergining
         merged_df = None
         
