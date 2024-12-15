@@ -160,8 +160,7 @@ class Reviews:
             else:
                 # Merge with the existing merged_df on 'state'
                 merged_df = pd.merge(merged_df, filter_year_pivot, on='state', how='outer')
-            
-        
+             
         return merged_df 
         
         
