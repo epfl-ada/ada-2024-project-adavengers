@@ -100,6 +100,8 @@ def barplot_fav_styles_per_state(beer_preferences, data_formatted):
 
     # Show the figure
     fig.show()
+    
+    return fig
                       
 class PlotStateMap:
     def __init__(self, data_by_state, hover_data, animation_frame, state_names_already_abbreviated=True, title: str = "Favourite",

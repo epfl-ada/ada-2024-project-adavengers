@@ -22,8 +22,15 @@ class Reviews:
         """
         
         # Load data
+        
+        # Different handling of pkl and csv files
+        if self.reviews_path.split('.')[1] == 'csv':
+            reviews_df = pd.read_csv(self.reviews_path)
+        else:
+            reviews_df = pd.read_pickle(self.reviews_path)
+            
         users_df = pd.read_csv(self.users_path)
-        reviews_df = pd.read_csv(self.reviews_path)
+        
         
         # Merge 2 dfs and approximate age
         merged_df = pd.merge(users_df[['user_id', 'joined', 'location']], reviews_df, on='user_id', how='inner')
@@ -163,6 +170,39 @@ class Reviews:
              
         return merged_df 
         
+    def posneg_sentiment_aggregation_counts(self, all_states):
+        """
+        Aggregate percentages of positive and negative sentiments based on reviews per beer style, state and year. 
+        """
+        
+        # Add general style to reviews from US reviews with sentiment
+        reviews_style = self.filter_beer_type()
+        
+        # Group by state, year, style and sentiment_label (positive / negative) and count per each
+        reviews_style_grouped_by = reviews_style.groupby(by=['state', 'year', 'general_style', 'sentiment_label'], group_keys=True).size().reset_index(name='count')
+        
+        # Move sentiment_label to columns
+        pivot = pd.pivot_table(reviews_style_grouped_by, values='count', index=['state', 'year', 'general_style'], columns='sentiment_label').reset_index()
+        print(pivot)
+        
+        # Fill NaN values with 0
+        fill_nan = pivot.fillna(value=0)
+        
+        # Normalize count of positive and negative labels
+        fill_nan['NEGATIVE'] = fill_nan['NEGATIVE'] / (fill_nan['NEGATIVE'] + fill_nan['POSITIVE'])
+        fill_nan['POSITIVE'] = fill_nan['POSITIVE'] / (fill_nan['NEGATIVE'] + fill_nan['POSITIVE'])
+        
+        # Boolean to chose states
+        if not all_states:
+            states = ['New York', 'California', 'New Hampshire', 'Wisconsin', 'Nevada', 'Pennsylvania', 'Virginia', 'Ohio', 'Florida', 'North Carolina', 'Arizona', 'Indiana', 'Georgia', 'Texas', 'South Carolina', 'Iowa', 'Kentucky']
+            # Extract reviews coming from these states and from the specified year 
+            filter_states = fill_nan[fill_nan['state'].isin(states)]
+            
+        else:
+            # Use all states
+            filter_states = fill_nan
+            
+        return filter_states
         
         
         
