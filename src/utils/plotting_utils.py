@@ -8,6 +8,35 @@ from dash.dependencies import Input, Output
 from scipy.stats import pearsonr, spearmanr
 from plotly.subplots import make_subplots
 
+def plot_clustering(x, y, labels, states):
+    """ Plots PCA of states clustered based on time series of voting patterns per age groups. """
+    fig = go.Figure()
+
+    # Add scatter points
+    fig.add_trace(go.Scatter(
+        x=x,
+        y=y,
+    mode='markers+text',
+    text=states,
+    marker=dict(
+        size=10,
+        color=labels, 
+        colorscale='Viridis',
+        showscale=False
+        ),
+    textposition="top center",
+    textfont=dict(size=8),
+    name="States"
+    ))
+
+    fig.update_layout(
+        title="Clustering of States Based on Voting Patterns",
+        xaxis_title="PCA Component 1",
+        yaxis_title="PCA Component 2",
+        template="plotly_white"
+    )
+
+    fig.show()
 
 def plot_sentiment_posneg_years(df):
     """Plotting the fraction of positive/negative sentiment for each beer style and state over the years 2004-2016"""
@@ -179,7 +208,7 @@ def get_beer_styles_data(results, state, beer_style, year_list):
         return results.loc[state, style_names]
 
 class BeerStyleTrendsDashApp:
-    def __init__(self, beer_preferences, winners, get_beer_styles_data):
+    def __init__(self, beer_preferences, winners, get_beer_styles_data, kind):
         
         # Initialize the App
         self.app = Dash(__name__)
@@ -189,8 +218,11 @@ class BeerStyleTrendsDashApp:
         self.year_list = list(np.arange(2004, 2017, 1, dtype=int))
         self.election_years = [2004, 2008, 2012, 2016]
         self.get_beer_styles_data = get_beer_styles_data
+        self.kind = kind
         
         self.setup_layout()
+        
+        
         
     def setup_layout(self):
         
@@ -199,7 +231,7 @@ class BeerStyleTrendsDashApp:
         pre_def_spearman, _ = spearmanr(self.get_beer_styles_data(self.beer_preferences, 'New York', 'IPA', self.year_list), self.get_beer_styles_data(self.beer_preferences, 'California', 'IPA', self.year_list))
         
         self.app.layout = html.Div([
-            html.H1("Beer Style Ratings by State", style={"color": "white"}),
+            html.H1(f"Beer Style {self.kind} by State", style={"color": "white"}),
 
             html.Div([
                 html.Div([
@@ -291,9 +323,9 @@ class BeerStyleTrendsDashApp:
             figure = {
                 'data': [trace_state1, trace_state2, election_results_state_1, election_results_state_2],
                 'layout': go.Layout(
-                    title=f"Beer Style Ratings: {style}",
+                    title=f"Beer Style {self.kind}: {style}",
                     xaxis={'title': 'Year'},
-                    yaxis={'title': 'Rating'},
+                    yaxis={'title': self.kind},
                     showlegend=True
                 )
             }

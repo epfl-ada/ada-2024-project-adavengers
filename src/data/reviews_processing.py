@@ -202,6 +202,36 @@ class Reviews:
             filter_states = fill_nan
             
         return filter_states
+    
+    def sentiment_to_wide(self, sentiment_drop, sentiment_keep, all_states, year_list):
+        """ Converts sentiment (either positive or negative) into wide format. """
+        
+        per_sentiment = self.posneg_sentiment_aggregation_counts(all_states)
+        per_sentiment_filt = per_sentiment[per_sentiment['year'].isin(year_list)]
+        
+        # Extract sentiment of interest
+        sentiment_interest = per_sentiment_filt.drop(columns=sentiment_drop)
+        years = sentiment_interest['year'].value_counts().index
+        
+        merged_df = None
+        
+        for year in years:
+            
+            filter_year = sentiment_interest[sentiment_interest['year'] == year].drop(columns=['year'])
+            filter_year_pivot = pd.pivot_table(filter_year, values=sentiment_keep, index='state', columns='general_style')
+        
+            # Rename columns
+            columns = filter_year_pivot.columns
+            filter_year_pivot.columns = [f"{col}_{year}" for col in columns] 
+            
+            if merged_df is None:
+                merged_df = filter_year_pivot
+                
+            else:
+                # Merge with the existing merged_df on 'state'
+                merged_df = pd.merge(merged_df, filter_year_pivot, on='state', how='outer')
+             
+        return merged_df 
         
         
         
