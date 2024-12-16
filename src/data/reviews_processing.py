@@ -183,14 +183,13 @@ class Reviews:
         
         # Move sentiment_label to columns
         pivot = pd.pivot_table(reviews_style_grouped_by, values='count', index=['state', 'year', 'general_style'], columns='sentiment_label').reset_index()
-        print(pivot)
         
         # Fill NaN values with 0
         fill_nan = pivot.fillna(value=0)
         
         # Normalize count of positive and negative labels
         fill_nan['NEGATIVE'] = fill_nan['NEGATIVE'] / (fill_nan['NEGATIVE'] + fill_nan['POSITIVE'])
-        fill_nan['POSITIVE'] = fill_nan['POSITIVE'] / (fill_nan['NEGATIVE'] + fill_nan['POSITIVE'])
+        fill_nan['POSITIVE'] = 1 - fill_nan['NEGATIVE']
         
         # Boolean to chose states
         if not all_states:
