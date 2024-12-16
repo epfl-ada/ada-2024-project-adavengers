@@ -141,12 +141,12 @@ def interpolate_votes(voting_data_merged):
 def merge_voting_by_years(path_to_data=""):
 
     election_years = [2004, 2008, 2012, 2016]
-    path_winners = path_to_data + f"data/generated/party_winners_over_years.csv"
+    path_winners = path_to_data / "data/generated/party_winners_over_years.csv"
     voting_data_merged = []
 
     for ind_year, year in enumerate(election_years):
 
-        data_path = path_to_data + f"data/{year}_per_age_region.csv"
+        data_path = path_to_data / f"data/{year}_per_age_region.csv"
 
         processed_data, _ = preprocess_data(data_path, path_winners, year)
         
@@ -216,4 +216,5 @@ def plot_vote_distribution(data, age_groups, years):
         )
 
     # Show the interactive plot
-    fig.show()
+    return fig
+    
