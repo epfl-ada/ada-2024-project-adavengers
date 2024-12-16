@@ -9,8 +9,8 @@ from scipy.stats import pearsonr, spearmanr
 from plotly.subplots import make_subplots
 
 
-def plot_sentiment_posneg(df):
-    """Plotting the fraction of positive/negative sentiment for each beer style and state over the years 2004-2016."""
+def plot_sentiment_posneg_years(df):
+    """Plotting the fraction of positive/negative sentiment for each beer style and state over the years 2004-2016"""
     years = sorted(df['year'].unique())
     beer_styles = df['general_style'].unique()
 
@@ -38,8 +38,8 @@ def plot_sentiment_posneg(df):
                 y=style_df['POSITIVE'],
                 name=f'POSITIVE {year}',
                 marker_color='green',
-                showlegend=(row_idx == 0),  # Show legend only for the first subplot
-                visible=(year == years[0])  # Only make traces for the first year visible
+                showlegend=(row_idx == 0),  
+                visible=(year == years[0])  
             ))
             
             # Add NEGATIVE bar
@@ -48,8 +48,8 @@ def plot_sentiment_posneg(df):
                 y=style_df['NEGATIVE'],
                 name=f'NEGATIVE {year}',
                 marker_color='red',
-                showlegend=False,  # Do not show legend for negative bars
-                visible=(year == years[0])  # Only make traces for the first year visible
+                showlegend=False,  
+                visible=(year == years[0])  
             ))
 
             # Add the traces to the subplot
@@ -63,7 +63,7 @@ def plot_sentiment_posneg(df):
             method="update",
             label=str(year),  
             args=[
-                {"visible": [False] * len(traces)},  # Start with all traces invisible
+                {"visible": [False] * len(traces)},  
                 {"title": f"Sentiment Analysis by Beer Style for {year}"}
             ],
         )
@@ -74,7 +74,7 @@ def plot_sentiment_posneg(df):
 
     # Create slider
     sliders = [dict(
-        active=0,  # Set default active year to the first one
+        active=0,  
         currentvalue={"prefix": "Year: "},
         steps=steps
     )]
@@ -83,13 +83,93 @@ def plot_sentiment_posneg(df):
     fig.update_layout(
         sliders=sliders,
         barmode='stack',
-        height=1200,  # Adjust for 4x2 layout
+        height=1200,  
         template="plotly_white",
         title=f"Sentiment Analysis by Beer Style for {years[0]}"
         #margin=dict(t=50,b=200,l=50,r=50)
     )
 
-    # Show the figure
+    fig.show()
+
+def plot_sentiment_posneg_states(df):
+    """Plotting the fraction of positive/negative sentiment for each beer style and state over the years 2004-2016"""
+    states = sorted(df['state'].unique())  
+    beer_styles = df['general_style'].unique()
+    years = sorted(df['year'].unique())
+
+    # Create a subplot layout: 4x2 grid
+    fig = make_subplots(
+        rows=4, cols=2,
+        subplot_titles=beer_styles,
+        vertical_spacing=0.1
+    )
+
+    # Create traces for each state and beer style
+    traces = []
+
+    for state in states:
+        filtered_df = df[df['state'] == state]
+        for row_idx, style in enumerate(beer_styles):
+            style_df = filtered_df[filtered_df['general_style'] == style]
+            row = (row_idx // 2) + 1
+            col = (row_idx % 2) + 1
+
+            # Add POSITIVE bar
+            traces.append(go.Bar(
+                x=style_df['year'],
+                y=style_df['POSITIVE'],
+                name=f'POSITIVE {state}',
+                marker_color='green',
+                showlegend=(row_idx == 0), 
+                visible=(state == states[0]) 
+            ))
+
+            # Add NEGATIVE bar
+            traces.append(go.Bar(
+                x=style_df['year'],
+                y=style_df['NEGATIVE'],
+                name=f'NEGATIVE {state}',
+                marker_color='red',
+                showlegend=False,  
+                visible=(state == states[0])  
+            ))
+
+            # Add the traces to the subplot
+            fig.add_trace(traces[-2], row=row, col=col)
+            fig.add_trace(traces[-1], row=row, col=col)
+
+    # Create slider steps for each state
+    steps = []
+    for state_idx, state in enumerate(states):
+        step = dict(
+            method="update",
+            label=state,  
+            args=[
+                {"visible": [False] * len(traces)},  
+                {"title": f"Sentiment Analysis by Beer Style for {state}"}
+            ],
+        )
+        # Make current state's traces visible
+        for trace_idx in range(len(beer_styles) * 2):
+            step["args"][0]["visible"][trace_idx + (state_idx * len(beer_styles) * 2)] = True
+        steps.append(step)
+
+    # Create slider
+    sliders = [dict(
+        active=0,  
+        currentvalue={"prefix": "State: "},
+        steps=steps
+    )]
+
+    # Update layout
+    fig.update_layout(
+        sliders=sliders,
+        barmode='stack',
+        height=1200, 
+        template="plotly_white",
+        title=f"Sentiment Analysis by Beer Style for {states[0]}"
+    )
+
     fig.show()
 
 
