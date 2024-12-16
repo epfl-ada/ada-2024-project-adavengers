@@ -1,45 +1,63 @@
 import plotly.express as px
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 import pandas as pd
 
 #======================================================================================================
 # Functions and Classes called in us_states_visualisation.ipynb Notebook
 # Examples of use can be found there
 
-def format_data_for_plotting(beer_preferences, year_list):
-    """ Format beer ratings in adequate shape for plotting. """
+def barplot_threefav_styles_compare(fav_three, state1, state2):
+    """ 
+    Creates a figure with barplot of top 3 favourite beer styles over years for comparison between 2 specified states. 
+    """
+    # Extract data from the specific states you want to plot
+    t3_state1 = fav_three[fav_three['state'] == state1]
+    t3_state2 = fav_three[fav_three['state'] == state2]
     
-    data = None
-    states = beer_preferences.index
-    styles = ['IPA', 'Lager', 'Other Ale', 'Pale Ale', 'Pilsner', 'Porter', 'Red/Amber Ale', 'Stout']
+    # Create subplots
+    fig = make_subplots(
+        rows=1, cols=2,  
+        subplot_titles=[f"Top 3 Beers in {state1}", f"Top 3 Beers in {state2}"],
+        shared_yaxes=True  
+        )
     
-    for year in year_list:
-            
-        name_style = [f"{style}_{year}" for style in styles]
-        style_year = beer_preferences[name_style]
-        
-        # Handle NaN rows - No Information
-        nan_rows = style_year.isna().all(axis=1)
-        style_year = style_year.fillna(-1)
-        
-        # Identify most preferred beer type
-        ratings = style_year.max(axis=1)
-        favourite_beer = style_year.idxmax(axis=1)
-        
-        # Reshape it in appropriate form
-        beer_style, years = favourite_beer.str.split('_', expand=True).T.values
-        new_frame = {"ratings": ratings, "beer_style": beer_style, "years": years}
-        new_df = pd.DataFrame(new_frame)
-        new_df = new_df.astype('object')
-        new_df.loc[nan_rows, ['ratings', 'beer_style']] = "No Information"
-        
-        if data is None:
-            data = new_df
-        
-        else:
-            data = pd.concat([data, new_df], axis=0)
+    # Add trace for one state
+    fig.add_trace(
+        go.Bar(x=t3_state1['year'], 
+            y=t3_state2['rating'], 
+            name=f'Top 3 Beers - {state1}', 
+            marker=dict(color=t3_state1['beer_style'].astype('category').cat.codes),
+            text=t3_state1['beer_style'],
+            hovertemplate='<b>%{text}</b><br>Rating: %{y}<extra></extra>'),
+            row=1, col=1
+        )
     
-    return data
+    # Add trace for the other state
+    fig.add_trace(
+        go.Bar(x=t3_state2['year'], 
+            y=t3_state2['rating'], 
+            name=f'Top 3 Beers - {state2}', 
+            marker=dict(color=t3_state2['beer_style'].astype('category').cat.codes),
+            text=t3_state2['beer_style'],
+            hovertemplate='<b>%{text}</b><br>Rating: %{y}<extra></extra>'),
+            row=1, col=2
+        )
+    
+    # Update layout for better spacing
+    # Update layout for better spacing
+    fig.update_layout(
+        title=f"Top 3 Beer Styles by Year for {state1} and {state2}",
+        barmode='group',
+        xaxis_title="Year",
+        yaxis_title="Rating",
+        height=500,
+        width=1200,
+        showlegend=False
+    )
+    
+    # Show the plot
+    fig.show()
 
 def barplot_fav_styles_per_state(beer_preferences, data_formatted):
     """ 
