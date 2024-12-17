@@ -33,13 +33,14 @@ def create_worldcloud(total_reviews):
     output_path = "beer_types_word_cloud.png"
     wordcloud.to_file(output_path)
 
-def plot_review_count(total_reviews):
+def plot_review_count(total_reviews, year_list):
     """ Create plot of total number of reviews from U.S. Users per beer style. """
     
-    total_reviews_grouped_by_style = total_reviews.groupby(by='general_style').size().reset_index(name='count')
-    total_reviews_grouped_by_style.sort_values(by=['count'], ascending=False, inplace=True)
+    total_reviews_list = total_reviews[total_reviews['year'].isin(year_list)]
+    total_reviews_grouped_by_style = total_reviews_list.groupby(by=['general_style', 'year']).size().reset_index(name='count')
+    sorted_df = total_reviews_grouped_by_style.sort_values(by=["year", "count"], ascending=[True, False])
     
-    fig = px.bar(total_reviews_grouped_by_style, x='general_style', y='count', title='Count of Reviews by U.S. Users per Beer Style', labels={'general_style': 'Beer Style', 'counts':'Counts'})
+    fig = px.bar(sorted_df, x='general_style', y='count', title='Count of Reviews by U.S. Users per Beer Style', labels={'general_style': 'Beer Style', 'counts':'Counts'}, animation_frame='year', range_y=[0, sorted_df['count'].max()])
     
     fig.show()
     

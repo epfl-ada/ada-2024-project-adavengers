@@ -9,7 +9,7 @@ class FavouriteBeers():
         Format created by aggregate_preferences_years method from Reviews class in reviews_processing.py.
         """
         self.beer_preferences = beer_preferences
-        self.year_list = list(np.arange(2004, 2018, 1, dtype=int))
+        self.year_list = list(np.arange(2004, 2017, 1, dtype=int))
         
     def favbeer_process_for_mapplotting(self):
         """ Format beer ratings in adequate shape for plotting favourite beer of state for each year. """
