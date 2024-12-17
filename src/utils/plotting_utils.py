@@ -35,7 +35,7 @@ def plot_clustering(x, y, labels, states):
         yaxis_title="PCA Component 2",
         template="plotly_white"
     )
-
+    
     fig.show()
 
 def plot_sentiment_posneg_years(df):
@@ -68,7 +68,7 @@ def plot_sentiment_posneg_years(df):
                 name=f'POSITIVE {year}',
                 marker_color='green',
                 showlegend=(row_idx == 0),  
-                visible=(year == years[0])  
+                visible=(year == years[0])
             ))
             
             # Add NEGATIVE bar
@@ -78,7 +78,7 @@ def plot_sentiment_posneg_years(df):
                 name=f'NEGATIVE {year}',
                 marker_color='red',
                 showlegend=False,  
-                visible=(year == years[0])  
+                visible=(year == years[0])
             ))
 
             # Add the traces to the subplot
@@ -114,9 +114,11 @@ def plot_sentiment_posneg_years(df):
         barmode='stack',
         height=1200,  
         template="plotly_white",
-        title=f"Sentiment Analysis by Beer Style for {years[0]}"
+        title=f"Sentiment Analysis by Beer Style for {years[0]}",
+        xaxis_tickangle=-45
         #margin=dict(t=50,b=200,l=50,r=50)
     )
+    fig.update_xaxes(tickangle=-45)
 
     fig.show()
 
@@ -196,9 +198,10 @@ def plot_sentiment_posneg_states(df):
         barmode='stack',
         height=1200, 
         template="plotly_white",
-        title=f"Sentiment Analysis by Beer Style for {states[0]}"
+        title=f"Sentiment Analysis by Beer Style for {states[0]}",
+        xaxis_tickangle=-45,  
     )
-
+    fig.update_xaxes(tickangle=-45)
     fig.show()
 
 
