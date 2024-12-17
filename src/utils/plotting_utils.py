@@ -3,10 +3,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import plotly.graph_objects as go 
+import plotly.express as px
 from dash import Dash, dcc, html 
 from dash.dependencies import Input, Output
 from scipy.stats import pearsonr, spearmanr
 from plotly.subplots import make_subplots
+
+def plot_review_count(total_reviews):
+    """ Create plot of total number of reviews from U.S. Users per beer style. """
+    
+    total_reviews_grouped_by_style = total_reviews.groupby(by='general_style').size().reset_index(name='count')
+    total_reviews_grouped_by_style.sort_values(by=['count'], ascending=False, inplace=True)
+    
+    fig = px.bar(total_reviews_grouped_by_style, x='general_style', y='count', title='Count of Reviews by U.S. Users per Beer Style', labels={'general_style': 'Beer Style', 'counts':'Counts'})
+    
+    fig.show()
+    
+    return fig
 
 def plot_clustering(x, y, labels, states):
     """ Plots PCA of states clustered based on time series of voting patterns per age groups. """
