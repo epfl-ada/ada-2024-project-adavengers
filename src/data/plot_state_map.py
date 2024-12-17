@@ -164,6 +164,8 @@ class PlotStateMap:
 )
         # Show the plot
         fig.show()
+        
+        return fig
 
     def plot_hist(self):
         pass

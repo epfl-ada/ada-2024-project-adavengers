@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from wordcloud import WordCloud
 
 import plotly.graph_objects as go 
 import plotly.express as px
@@ -8,6 +9,29 @@ from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 from scipy.stats import pearsonr, spearmanr
 from plotly.subplots import make_subplots
+
+def create_worldcloud(total_reviews):
+    """ Create a world cloud of total reviews after filtering out specific beer styles. """
+    
+    style = total_reviews['style'].value_counts().index
+    
+    text = "".join(style)
+    
+    wordcloud = WordCloud(
+    background_color="white",
+    colormap="copper",  # Brownish color palette
+    width=800,
+    height=400
+    ).generate(text)
+
+    # Plot the word cloud
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation="bilinear")
+    plt.axis("off")
+    plt.title("Beer Types Word Cloud", fontsize=16, color="black", pad=20)
+    plt.show()
+    output_path = "beer_types_word_cloud.png"
+    wordcloud.to_file(output_path)
 
 def plot_review_count(total_reviews):
     """ Create plot of total number of reviews from U.S. Users per beer style. """
@@ -43,13 +67,15 @@ def plot_clustering(x, y, labels, states):
     ))
 
     fig.update_layout(
-        title="Clustering of States Based on Voting Patterns",
+        title="Clustering of States Based on Voting Trends",
         xaxis_title="PCA Component 1",
         yaxis_title="PCA Component 2",
         template="plotly_white"
     )
     
     fig.show()
+    
+    return fig
 
 def plot_sentiment_posneg_years(df):
     """Plotting the fraction of positive/negative sentiment for each beer style and state over the years 2004-2016"""
@@ -134,6 +160,8 @@ def plot_sentiment_posneg_years(df):
     fig.update_xaxes(tickangle=-45)
 
     fig.show()
+    
+    return fig
 
 def plot_sentiment_posneg_states(df):
     """Plotting the fraction of positive/negative sentiment for each beer style and state over the years 2004-2016"""
@@ -216,7 +244,8 @@ def plot_sentiment_posneg_states(df):
     )
     fig.update_xaxes(tickangle=-45)
     fig.show()
-
+    
+    return fig
 
 def get_beer_styles_data(results, state, beer_style, year_list):
         
