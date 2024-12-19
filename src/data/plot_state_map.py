@@ -7,57 +7,98 @@ import pandas as pd
 # Functions and Classes called in us_states_visualisation.ipynb Notebook
 # Examples of use can be found there
 
-def barplot_threefav_styles_compare(fav_three, state1, state2):
+def barplot_threefav_styles_compare(fav_three, state1_list, state2_list):
     """ 
-    Creates a figure with barplot of top 3 favourite beer styles over years for comparison between 2 specified states. 
+    Creates a figure with barplot of top 3 favourite beer styles over years for comparison between predefined pairs of states that can be . 
     """
-    # Extract data from the specific states you want to plot
-    t3_state1 = fav_three[fav_three['state'] == state1]
-    t3_state2 = fav_three[fav_three['state'] == state2]
+    # Create a subplot with 1 row and 2 columns, sharing the Y-axis
+    fig = make_subplots(rows=1, cols=2, shared_yaxes=True)
+
+    # Keep track of traces and dropdown options
+    total_traces = len(state1_list) * 2
+    trace_count = 0
+    dropdown_buttons = []
     
-    # Create subplots
-    fig = make_subplots(
-        rows=1, cols=2,  
-        subplot_titles=[f"Top 3 Beers in {state1}", f"Top 3 Beers in {state2}"],
-        shared_yaxes=True  
-        )
-    
-    # Add trace for one state
-    fig.add_trace(
-        go.Bar(x=t3_state1['year'], 
-            y=t3_state2['rating'], 
-            name=f'Top 3 Beers - {state1}', 
-            marker=dict(color=t3_state1['beer_style'].astype('category').cat.codes),
-            text=t3_state1['beer_style'],
-            hovertemplate='<b>%{text}</b><br>Rating: %{y}<extra></extra>'),
+    initial_visibility = [False] * total_traces  # *2 for two subplots
+    initial_visibility[0] = True
+    initial_visibility[1] = True
+
+    for state1, state2 in zip(state1_list, state2_list):
+        # Create a visibility array to toggle traces
+        visibility = [False] * total_traces
+
+        # Filter data for the two states
+        state1_data = fav_three[fav_three['state'] == state1]
+        state2_data = fav_three[fav_three['state'] == state2]
+
+        # Add trace for the first state
+        fig.add_trace(
+            go.Bar(
+                x=state1_data['year'],
+                y=state1_data['rating'],
+                name=f"{state1} Top 3 Beers",
+                marker=dict(color=state1_data['beer_style'].astype('category').cat.codes),
+                text=state1_data['beer_style'],
+                hovertemplate='<b>%{text}</b><br>Rating: %{y}<extra></extra>'
+            ),
             row=1, col=1
         )
-    
-    # Add trace for the other state
-    fig.add_trace(
-        go.Bar(x=t3_state2['year'], 
-            y=t3_state2['rating'], 
-            name=f'Top 3 Beers - {state2}', 
-            marker=dict(color=t3_state2['beer_style'].astype('category').cat.codes),
-            text=t3_state2['beer_style'],
-            hovertemplate='<b>%{text}</b><br>Rating: %{y}<extra></extra>'),
+        visibility[trace_count] = True
+        trace_count += 1
+
+        # Add trace for the second state
+        fig.add_trace(
+            go.Bar(
+                x=state2_data['year'],
+                y=state2_data['rating'],
+                name=f"{state2} Top 3 Beers",
+                marker=dict(color=state2_data['beer_style'].astype('category').cat.codes),
+                text=state2_data['beer_style'],
+                hovertemplate='<b>%{text}</b><br>Rating: %{y}<extra></extra>'
+            ),
             row=1, col=2
         )
-    
-    # Update layout for better spacing
-    # Update layout for better spacing
+        visibility[trace_count] = True
+        trace_count += 1
+
+        # Add a dropdown button for this state pair
+        dropdown_buttons.append({
+            'label': f"{state1} & {state2}",
+            'method': 'update',
+            'args': [
+                {'visible': visibility},
+                {'title': f"Top 3 Favourite Beer Styles by Rankings over Years: {state1} (left) vs {state2} (right)"}
+            ]
+        })
+
+    # Configure the layout
     fig.update_layout(
-        title=f"Top 3 Beer Styles by Year for {state1} and {state2}",
+        updatemenus=[{
+            'buttons': dropdown_buttons,
+            'direction': 'down',
+            'showactive': True,
+            'x': 0.9,
+            'y': 1.22,
+            'xanchor': 'center',
+            'yanchor': 'top'
+        }],
+        title="Top 3 Favourite Beer Styles by Rankings over by Years: Wisconsin (left) vs Pennsylvania (right)",
         barmode='group',
         xaxis_title="Year",
+        xaxis2_title="Year",
         yaxis_title="Rating",
         height=500,
         width=1200,
         showlegend=False
     )
-    
-    # Show the plot
+
+    # Display the figure
+    # Set initial visibility for the first two pairs
+    for i in range(len(fig.data)):
+        fig.data[i].visible = initial_visibility[i]
     fig.show()
+    
+    return fig
 
 def barplot_fav_styles_per_state(beer_preferences, data_formatted):
     """ 
@@ -165,6 +206,33 @@ class PlotStateMap:
         # Show the plot
         fig.show()
         
+        return fig
+    
+    def plot_swing_pattern(self):
+        """ Function that does plotting of swing pattern. """
+        
+        data = pd.DataFrame({
+            'state': ['IN', 'IA', 'FL', 'NV', 'NC', 'OH', 'PA', 'VA', 'WI'],
+            'Swing Pattern': ['Democrat only in 2008', 'Republican in 2004 and 2016 // Democrat in 2008 and 2012', 'Republican in 2004 and 2016 // Democrat in 2008 and 2012', 'Republican only in 2004', 'Democrat only in 2008', 'Republican in 2004 and 2016 // Democrat in 2008 and 2012', 'Republican only in 2016', 'Republican only in 2004', 'Republican only in 2016'],
+            'state_full': ['Indiana', 'Iowa', 'Florida', 'Nevada', 'North Carolina', 'Ohio', 'Pennsylvania', 'Virginia', 'Wisconsin']})
+
+        # Create the choropleth plot
+        fig = px.choropleth(
+            data,
+            locations='state',
+            locationmode='USA-states',
+            color='Swing Pattern', 
+            hover_name='state_full',
+            hover_data=['Swing Pattern'], 
+            scope='usa',
+            title="Swing States and their Respective Swing Patterns",
+        )
+
+        fig.update_layout(width=1000, height=500)
+
+        # Show the plot
+        fig.show()
+    
         return fig
 
     def plot_hist(self):
