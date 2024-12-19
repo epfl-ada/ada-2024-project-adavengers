@@ -10,6 +10,176 @@ from dash.dependencies import Input, Output
 from scipy.stats import pearsonr, spearmanr
 from plotly.subplots import make_subplots
 
+def pairwise_trendplot(predef_state1, predef_state2, beer_styles, year_list, election_years, results, positive_sentiment, winners):
+    """ Function for plotting trend comparison for average rating and positive sentiment fraction for subset of pairwise states. """
+    
+    # Election winners in adequate format
+    election_winners_by_state = winners.groupby('state').apply(lambda group: dict(zip(group['year'], group['winner']))).to_dict()
+    
+    # Create subplot
+    fig = make_subplots(rows=3, cols=1, subplot_titles=beer_styles, specs=[[{"secondary_y": True}], [{"secondary_y": True}], [{"secondary_y": True}]])
+
+    trace_count = 0
+    dropdown_buttons = []
+    total_traces = len(predef_state1) * 24
+    update_title = []
+
+    for state1, state2 in zip(predef_state1, predef_state2):
+        visibility_array = [False] * total_traces
+        
+        for i, style in enumerate(beer_styles):
+            
+            # Correlations for updating the title 
+            spearmancorr_rating, _ = spearmanr(get_beer_styles_data(results, state1, style, year_list), get_beer_styles_data(results, state2, style, year_list))
+            spearmancorr_sentiment, _ = spearmanr(get_beer_styles_data(positive_sentiment, state1, style, year_list), get_beer_styles_data(positive_sentiment, state2, style, year_list))
+            
+            update_title.append(f"{style} // Spearman Corr. - Av. Rating ({spearmancorr_rating:.2f}) & Pos. Sent. ({spearmancorr_sentiment:.2f})")
+            
+            # Add average rating with respective markers for political winners
+            # State1 - Rating
+            fig.add_trace(go.Scatter(
+                x=year_list,
+                y=get_beer_styles_data(results, state1, style, year_list),
+                mode='lines',
+                name=f'Average Rating {state1} - {style}',
+                line={'color':'blue'},
+                visible=False), row=i+1, col=1, secondary_y=False)
+            visibility_array[trace_count]=True
+            trace_count += 1
+            
+            # State1 - Winner
+            fig.add_trace(go.Scatter(
+                x=election_years,
+                y=get_beer_styles_data(results, state1, style, election_years),
+                mode='markers',
+                marker=dict(size=10, color=['blue' if election_winners_by_state[state1][year] == 'Democrat' else 'red' for year in election_years]),
+                hovertext=[election_winners_by_state[state1][year] for year in election_years],
+                hoverinfo='text',
+                showlegend=False,
+                visible=False), row=i+1, col=1, secondary_y=False)
+            visibility_array[trace_count]=True
+            trace_count += 1
+            
+            # State2 - Rating
+            fig.add_trace(go.Scatter(
+                x=year_list,
+                y=get_beer_styles_data(results, state2, style, year_list),
+                mode='lines',
+                name=f'Average Rating {state2} - {style}',
+                line={'color':'orange'},
+                visible=False), row=i+1, col=1, secondary_y=False)
+            visibility_array[trace_count]=True
+            trace_count += 1
+            
+            # State2 - Winners
+            fig.add_trace(go.Scatter(
+                x=election_years,
+                y=get_beer_styles_data(results, state2, style, election_years),
+                mode='markers',
+                marker=dict(size=10, color=['blue' if election_winners_by_state[state2][year] == 'Democrat' else 'red' for year in election_years]),
+                hovertext=[election_winners_by_state[state2][year] for year in election_years],
+                hoverinfo='text',
+                showlegend=False,
+                visible=False), row=i+1, col=1, secondary_y=False)
+            visibility_array[trace_count]=True
+            trace_count += 1
+            
+            # Add positive sentiment fraction with respective markers for political winners
+            
+            # State1 - Positive Sentiment Fraction
+            fig.add_trace(go.Scatter(
+                x=year_list,
+                y=get_beer_styles_data(positive_sentiment, state1, style, year_list),
+                mode='lines',
+                name=f'Fraction Pos. Sentiment {state1} - {style}',
+                line={'color':'green'},
+                visible=False), row=i+1, col=1, secondary_y=True)
+            visibility_array[trace_count]=True
+            trace_count += 1
+            
+            # State1 - Winners
+            fig.add_trace(go.Scatter(
+                x=election_years,
+                y=get_beer_styles_data(positive_sentiment, state1, style, election_years),
+                mode='markers',
+                marker=dict(size=10, color=['blue' if election_winners_by_state[state1][year] == 'Democrat' else 'red' for year in election_years]),
+                hovertext=[election_winners_by_state[state1][year] for year in election_years],
+                hoverinfo='text',
+                showlegend=False,
+                visible=False), row=i+1, col=1, secondary_y=True)
+            visibility_array[trace_count]=True
+            trace_count += 1
+            
+            # State2 - Positive Sentiment
+            fig.add_trace(go.Scatter(
+                x=year_list,
+                y=get_beer_styles_data(positive_sentiment, state2, style, year_list),
+                mode='lines',
+                name=f'Fraction Pos. Sentiment {state2} - {style}',
+                line={'color':'red'},
+                visible=False), row=i+1, col=1, secondary_y=True)
+            visibility_array[trace_count]=True
+            trace_count += 1
+            
+            # State2 - Winners
+            fig.add_trace(go.Scatter(
+                x=election_years,
+                y=get_beer_styles_data(positive_sentiment, state2, style, election_years),
+                mode='markers',
+                marker=dict(size=10, color=['blue' if election_winners_by_state[state2][year] == 'Democrat' else 'red' for year in election_years]),
+                hovertext=[election_winners_by_state[state2][year] for year in election_years],
+                hoverinfo='text',
+                showlegend=False,
+                visible=False), row=i+1, col=1, secondary_y=True)
+            visibility_array[trace_count]=True
+            trace_count += 1
+            
+        # Add dropdown button for current pair
+        dropdown_buttons.append({
+            'label': f"{state1} & {state2}",
+            'method': "update",
+            "args": [{"visible": visibility_array},
+                    {"annotations": [
+                    dict(
+                        x=0.5, y=1.05 - i * 0.4, xref='paper', yref='paper',
+                        text=update_title[i],
+                        showarrow=False,
+                        font=dict(size=12),
+                        align="center"
+                    )
+                    for i in range(len(beer_styles))
+                ]}]
+        })
+        update_title = []
+            
+    # Update layout
+    fig.update_layout(
+        updatemenus=[
+            {
+                "buttons": dropdown_buttons,
+                "direction": "down",
+                "showactive": True,
+            }
+        ],
+        title="Analysis of Beer Trends (Average Rating and Fraction of Positive Sentiment) for Pairs of States",
+        height=1000,
+        width=1200
+    )
+
+    primary_yaxis_key = ['yaxis', 'yaxis3', 'yaxis5']
+    secondary_yaxis_key = ['yaxis2', 'yaxis4', 'yaxis6']
+
+    for i in range(len(beer_styles)):
+        # Update primary y-axis title
+        
+        fig['layout'][primary_yaxis_key[i]].update(title={'text': 'Average Rating', 'font':dict(size=10)})
+        fig['layout'][secondary_yaxis_key[i]].update(title={'text': 'Fraction Positive Sentiment', 'font':dict(size=10)})
+
+    # Show plot
+    fig.show()    
+    
+    return fig
+        
 def create_worldcloud(total_reviews):
     """ Create a world cloud of total reviews after filtering out specific beer styles. """
     
@@ -252,7 +422,7 @@ def get_beer_styles_data(results, state, beer_style, year_list):
         
         style_names = [f"{beer_style}_{year}" for year in year_list]
         return results.loc[state, style_names]
-
+    
 class BeerStyleTrendsDashApp:
     def __init__(self, beer_preferences, winners, get_beer_styles_data, kind):
         
@@ -378,9 +548,9 @@ class BeerStyleTrendsDashApp:
     
             return figure, pearson_text, spearman_text
     
-    def run(self):
+    def run(self, port):
         # Run App
-        self.app.run_server(mode='inline')
+        self.app.run_server(mode='inline', port=port)
 
 
 def plot_beer_pref_trends(beer_ratings, winners, states):
