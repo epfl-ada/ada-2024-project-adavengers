@@ -4,12 +4,20 @@ from plotly.subplots import make_subplots
 import pandas as pd
 
 #======================================================================================================
-# Functions and Classes called in us_states_visualisation.ipynb Notebook
+# Functions and Class called in us_states_visualisation.ipynb Notebook for Visualizations
 # Examples of use can be found there
 
 def barplot_threefav_styles_compare(fav_three, state1_list, state2_list):
     """ 
-    Creates a figure with barplot of top 3 favourite beer styles over years for comparison between predefined pairs of states that can be . 
+    Creates a figure with barplot of top 3 favourite beer styles over years for comparison between predefined pairs of states.
+    
+    Args:
+        @fav_three (pd.DataFrame): DataFrame containing three columns - state, year, rating, beer_style. Each state repeats three times for each year - each entry represents one of top 3 favourite styles. 
+        @state1_list (list): List containing state names, representing one element of the pair in plot.
+        @state2_list (list):  List containing state names, representing other element of the pair in plot.
+        
+    Return:
+        @fig (go.Figure): Figure - 2 subplots containing bar plots of top 3 favourite beer styles over years for 2 states selected by dropdown button.
     """
     # Create a subplot with 1 row and 2 columns, sharing the Y-axis
     fig = make_subplots(rows=1, cols=2, shared_yaxes=True)
@@ -104,6 +112,13 @@ def barplot_fav_styles_per_state(beer_preferences, data_formatted):
     """ 
     Function creates bar plot of counts of favourite beer styles per state (which can be selected from dropdown menu). 
     Faves are counted in range of 2004 to 2016. 
+    
+    Args:
+        @beer_preferences (pd.DataFrame): DataFrame where each row represents one state and columns are e.g. IPA_2004, IPA_2005, IPA_2006, ... (like this for each one of 8 general beer styles that we selected).
+        @data_formatted (pd.DataFrame): DataFrame of [state, rating, beer_style, year] - every row contains top rated beer style for that state and that year.
+        
+    Returns:
+        @fig (go.Figure): Figure displaying counts of how many times beer style was favourite per state (selected through dropdown button) in range 2004-2016.
     """
     
     # Create a list of unique states
@@ -148,8 +163,15 @@ class PlotStateMap:
     def __init__(self, data_by_state, hover_data, animation_frame, state_names_already_abbreviated=True, title: str = "Favourite",
                  dataMetric: str = "Population"):
         """
-        key is state name, value is what value we want to display for that state
-        @type data_by_state: dict
+        Creates a instance of PlotStateMap class.
+        
+        Args:
+            @ data_by_state (pd.DataFrame): DataFrame where each row represents one state and columns are e.g. IPA_2004, IPA_2005, IPA_2006, ... (like this for each one of 8 general beer styles that we selected).
+            @ hover_data (dict): Specifies which columns of DataFrame are going to be displayed as hover data over state.
+            @ animation_frame (string): Column along which slider is created. 'years' in this case.
+            @ state_names_already_abbreviated (bool): Whether state names are already abbreviated to 2 letter codes.
+            @ title (str): Title for the plot.
+            @ dataMetric (str): Specifies which column of the DataFrame will be discriminator for colors between states.
         """
         if type(data_by_state) == dict:
             print("dict")
@@ -178,7 +200,13 @@ class PlotStateMap:
         self.animation_frame = animation_frame
         
     def plot_map(self):
-        # Plot the map
+        """ 
+        Plots map of U.S. states where each state is colored differently depending on favourite beer style (the one with highest average rating). Includes the slider for selecting different years. 
+        
+        Returns:
+            @ fig (go.Figure): Figure that displayes what is described above.
+            
+        """
 
         fig = px.choropleth(
             self.data_by_state_df,
@@ -209,7 +237,12 @@ class PlotStateMap:
         return fig
     
     def plot_swing_pattern(self):
-        """ Function that does plotting of swing pattern. """
+        """ 
+        Function that does plotting of swing pattern. DataFrame is manually created within the function since there is not many states. Countries with the same swing pattern are colored same way.
+        
+        Returns:
+            @ fig (go.Figure): Described figure.
+        """
         
         data = pd.DataFrame({
             'state': ['IN', 'IA', 'FL', 'NV', 'NC', 'OH', 'PA', 'VA', 'WI'],
@@ -239,10 +272,15 @@ class PlotStateMap:
         pass
 
 # Outside of the class
-
 def transform_state_abbreviations(df):
     """
-    Transforms state names in the index to abbreviations
+    Transforms state names in the index to abbreviations.
+    
+    Args:
+        @ df (pd.DataFrame): DataFrame which as index column has full U.S. state's names.
+       
+    Returns:
+        @ data (pd.DataFrame): New DataFrame where index column is modified such that there are no full state names but two letter abbreviations. 
     """
     # State abbreviation dictionary
     state_abbreviations = {
