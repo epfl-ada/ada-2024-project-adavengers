@@ -10,6 +10,78 @@ from dash.dependencies import Input, Output
 from scipy.stats import pearsonr, spearmanr
 from plotly.subplots import make_subplots
 
+
+def plot_correlation_matrix(results, beer_styles, year_list):
+    """ Plot correlation matrix of pearson coefficients of time series for beer styles between each pair of states. """
+    dropdown_buttons = []
+    heatmap_traces = []
+
+    for style_index, style in enumerate(beer_styles):
+        
+        extract_columns = [f"{style}_{year}" for year in year_list]
+        beer_interest = results[extract_columns]
+        correlation_matrix = beer_interest.T.corr(method='pearson')
+        
+        heatmap_trace = go.Heatmap(
+            z=correlation_matrix.values,
+            x=correlation_matrix.columns,
+            y=correlation_matrix.index,
+            colorscale='Viridis',
+            zmin=-1,
+            zmax=1,
+            visible=False,  
+            colorbar=dict(title="Pearson Correlation"),
+            hovertemplate=(
+                f"<b>Beer Style:</b> {style}<br>"
+                "<b>State 1:</b> %{y}<br>"
+                "<b>State 2:</b> %{x}<br>"
+                "<b>Correlation:</b> %{z:.2f}<extra></extra>"
+            )
+        )
+        
+        heatmap_traces.append(heatmap_trace)
+        
+        # Add a dropdown button for the beer style
+        dropdown_buttons.append({
+            'label': style,
+            'method': 'update',
+            'args': [
+                {'visible': [i == style_index for i in range(len(beer_styles))]},
+                {'title': f"Heatmap of Pearson Correlation Coefficient between Time Series of Average Ratings"}
+            ]
+        })
+
+    # Set the first heatmap to be visible
+    heatmap_traces[0]['visible'] = True
+
+    # Create the figure
+    fig = go.Figure(data=heatmap_traces)
+
+    # Add layout with dropdown menu
+    fig.update_layout(
+        title="Heatmap of Pearson Correlation Coefficients between Time Series of Average Ratings",
+        updatemenus=[
+            {
+                'buttons': dropdown_buttons,
+                'direction': 'down',
+                'showactive': True,
+                'x': 0.05,
+                'y': 1.1,
+                'yanchor': 'top'
+            }
+        ],
+        height=600,
+        width=800,
+        xaxis=dict(title="States"),
+        yaxis=dict(title="States")
+    )
+
+    # Show the figure
+    fig.show()
+    
+    return fig
+
+
 def pairwise_trendplot(predef_state1, predef_state2, beer_styles, year_list, election_years, results, positive_sentiment, winners):
     """ Function for plotting trend comparison for average rating and positive sentiment fraction for subset of pairwise states. """
     
