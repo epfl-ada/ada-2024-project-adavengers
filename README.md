@@ -1,12 +1,10 @@
 # Pints & Politics: Analyzing Beer Preferences Across U.S. States
 
+## Link to the [data story](https://mikaelkalajdzic.github.io/adavengers-datastory/)
 
 ## Abstract
-This study dives into the fascinating link between beer preferences and political identities in the U.S. By analyzing beer styles, emotions, sentiments, and key attributes through user reviews, we uncover patterns that go beyond taste. Using tools like LDA and sentiment analysis, we’ll map out how different states' beer choices align with political leanings. We'll also explore whether beer preferences shift during election years, especially in swing states. Can beer really reveal more than just flavour? Let's find out!
 
-
-## Datastory
-The datastory can be accessed on this [website](https://mikaelkalajdzic.github.io/adavengers-datastory/datastory) for free.
+This study dives into the fascinating link between beer preferences and political identities in the U.S. By analyzing beer styles, sentiments, and key attributes through user reviews, we uncover patterns that go beyond taste. We will analyze beer preference trends across U.S. states, and see if we can link them with their political affiliation. We'll also explore beer preferences shift during and between election years, especially in swing states. Can beer really reveal more than just flavour? Let's find out!
 
 
 ## Research Questions
@@ -20,7 +18,7 @@ Q3. How do beer preferences change over time during election years, particularly
 
 
 
-## Proposed datasets
+## Additional datasets
 
 
 ### 1. U.S. President Dataset ([link](https://doi.org/10.7910/DVN/42MVDX))
@@ -42,7 +40,7 @@ These datasets provide the percentage of Democrat and Republican votes for age g
 We have separated the project into 3 tasks, each of them corresponding to one of the research questions above.
 
 
-### Part 1. Characterizing beer preferences
+### Task 1. Characterizing beer preferences
 
 We analyzed the beer reviews dataset. To define diverse beer preferences, we will examine different dimensions such as beer style, sentiment and overall score of a beer. The goal in this part is to get a better sense of the general beer styles that we have.
 We regrouped the 108 unique beer styles into 8 general common beer categories. We tried to use data to understand what those 8 categories of beer mean, what are the beer characteristics that differ? (we defined 5 semantical characteristics about a beer : ( 1. Hop Intensity 2. Malt Profile 3. Body/Texture 4. Alcohol Strength 5. Carbonation) 
@@ -58,9 +56,9 @@ Given the limitations of our dataset, we are not able to estimate factors like e
 
 We assume review user ages are uniformly distributed in the range from 18 to 64. And for political data, we extract 3 age groups from exit polls: 18-29, 30-44, and 45-64. We got the percentage of Democrat and Republican votes for each age group across the 17 states of the dataset.
 
-All the data is available for years 2004-2016, with which we construct a time-series of voting and beer preference trend. We perform K-Means clustering to determine states with similar voting patterns and examine their beer preference trends.
+The voting data is available for election years 2004-2016, and by interpolating the data for the years in between, we construct a time-series of voting and beer preference trend. We perform K-Means clustering to determine states with similar voting patterns and examine their beer preference trends.
 
-By performing a "lookalike" analysis, we aim to determine influence of confounding factors on beer preference. 
+By performing a "lookalike" analysis of these timeseries, we aim to determine influence of confounding factors, political voting trend and geographical location on beer preference. 
 
 
 ### Task 3. Time series analysis of beer preferences over election years in swing states
@@ -100,18 +98,19 @@ The directory structure of the project looks like this:
 
 ```
 ├── data                        <- Project data files (original data)
-│   ├──BeerAdvocate                     <- Placeholder for BeerAdvocate dataset
-│   ├── generated                       <- Generated csv/pickle files
-│
-├── fonts                       <- Addtional fonts
-│
-├── images                      <- Images (mask for cloud of words)
+│   ├── generated                        <- Generated csv/pickle files
+│   ├── BeerAdvocate                     <- Place the BeerAdvocate dataset here
+│   ├── 1976-2020-president.csv          <- Presidential dataset containing party winners in each state
+│   ├── {year}_per_age_region.csv        <- Exit poll voting per age groups data
 │
 ├── src                         <- Source code
-│   ├── data                            <- Data directory (data processing, results stored in data/generated)
-│   ├── ipynb scripts                   <- Jupyter Notebooks for analyzing additional datasets
+│   ├── data                            <- Data directory (data processing scripts)
+│   ├── ipynb scripts                   <- Jupyter Notebooks for more detailed analysis that may not be in results.ipynb
 │   ├── models                          <- Model directory
-│   ├── plots                           <- Scripts generating interactive plots
+│   ├── utils                           <- Utility directory
+│   ├── plots                           <- Scripts for generating plots
+│
+├── tests                       <- Tests of any kind
 │
 ├── results.ipynb               <- a well-structured notebook showing the results
 │
@@ -120,3 +119,6 @@ The directory structure of the project looks like this:
 └── README.md
 ```
 
+## Additional Notes
+
+Note that some files that were generated during the analysis are too large for GitHub (over 1GB). They can be generated by running their respective Python scripts, and will be placed in the `data/generated` folder.
