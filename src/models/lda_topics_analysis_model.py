@@ -1,3 +1,5 @@
+import pandas as pd
+import pathlib
 from gensim import corpora
 from gensim.models import LdaModel
 from nltk.corpus import stopwords
@@ -5,15 +7,15 @@ from nltk.stem.wordnet import WordNetLemmatizer
 from collections import defaultdict
 from pprint import pprint
 import nltk
-
-from src.data.text_reviews_dataloader import TextReviews
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 nltk.download('stopwords')
 nltk.download('wordnet')
 
 
 class LDAAnalysis:
-    def __init__(self, reviews: list[str]):
+    def __init__(self, reviews: list[str] = []):
         """
         Initialize the LDA Analysis pipeline with the dataset
         The goal is to find the general topics in the reviews
@@ -27,8 +29,17 @@ class LDAAnalysis:
         self.corpus = None
         self.lda_model = None
 
-    def load_dataset(self):
-        """Load the dataset using the TextReviews class."""
+    def load_dataset(self, reviews_df_path):
+        """Load the dataset """
+        reviews_df = pd.read_csv(reviews_df_path)
+
+        # remove empty strings
+        reviews_df['text'] = reviews_df['text'].dropna()
+        reviews_df['text'] = reviews_df['text'].astype(str)
+        reviews_df = reviews_df[reviews_df['text'].str.strip() != '']
+
+        reviews = reviews_df['text'].tolist()
+        self.dataset = reviews
         print(f"Loaded dataset with {len(self.dataset)} reviews.")
 
     def preprocess(self):
@@ -82,20 +93,34 @@ class LDAAnalysis:
             raise ValueError("please train the LDA model first")
         pprint(self.lda_model.print_topics(num_words=num_words))
 
+    def save_model(self, model_path: str):
+        """Save the trained LDA model"""
+        self.lda_model.save(model_path)
+
+    def load_saved_model(self, model_path: str):
+        """Load a saved LDA model"""
+        self.lda_model = LdaModel.load(model_path)
+
+    def show_plot(self):
+        for i in range(6):  # Assuming 6 topics
+            plt.figure()
+            word_freq = dict(lda_analysis.lda_model.show_topic(i, 30))
+            wordcloud = WordCloud(background_color='white').generate_from_frequencies(word_freq)
+            plt.imshow(wordcloud, interpolation='bilinear')
+            plt.axis('off')
+            plt.title(f"Topic {i}")
+            plt.show()
+
 
 if __name__ == "__main__":
-    # Sample reviews with two main categories: technology and health
-    reviews = ["The computer network relies on secure software for data protection.",
-               "A balanced diet and regular exercise are key to good health.",
-               "Programming AI systems requires a deep understanding of data.",
-               "Medicine and treatment plans are developed by the doctor for wellness.",
-               "Internet connectivity is essential for accessing modern software tools.",
-               "Exercise improves overall wellness and complements a healthy diet."
-               ]
-    # Need to use TextReviews instead of this sample and study the topics in the reviews that come out
-    # TODO see what chunk size parameters to use and should we use n-grams as well during preprocessing?
-    lda_analysis = LDAAnalysis(reviews)
-    lda_analysis.load_dataset()
+    data_dir_path = pathlib.Path("../../data")
+    reviews_df_path = data_dir_path / "generated" / "reviews_df.csv"
+
+    lda_analysis = LDAAnalysis()
+    lda_analysis.load_dataset(reviews_df_path)
     lda_analysis.preprocess()
     lda_analysis.train_lda()
     lda_analysis.print_topics(num_words=10)
+
+    dst_model_path = data_dir_path / "generated" / "biglda"
+    lda_analysis.save_model(dst_model_path) # save the model for later use
