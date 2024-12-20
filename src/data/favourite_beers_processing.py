@@ -1,12 +1,19 @@
 import pandas as pd
 import numpy as np
 
+#================================================================================================================================
+# .py script that contains Class for data processing to obtain favourite/top 3 favourite beer style according to average ratings.
+# Mostly used for data processing in us_states_visualization.ipynb
+
 class FavouriteBeers():
     """ Class that does various processings of beer style preferences to prepare data for plotting. """
     def __init__(self, beer_preferences):
         """
-        @param beer_preferences: pd.DataFrame containing average rating of selected beer styles per year per US state. 
-        Format created by aggregate_preferences_years method from Reviews class in reviews_processing.py.
+        Initializes object of a class.
+        
+        Args:
+            @ param beer_preferences (pd.DataFrame): DataFrame where each row represents one state and columns are e.g. IPA_2004, IPA_2005, IPA_2006, ... (like this for each one of 8 general beer styles that we selected) and each column representing mean of average ratings for that beer style.
+        
         """
         self.beer_preferences = beer_preferences
         self.year_list = list(np.arange(2004, 2017, 1, dtype=int))
@@ -48,7 +55,12 @@ class FavouriteBeers():
         return data
     
     def threefavbeer_for_barplotting(self):
-        """ Format beer ratings in adequate shape for bar plotting 3 favourite beers of state for each year. """ 
+        """ 
+        Format beer ratings in adequate shape for bar plotting 3 favourite beers of state for each year.
+        
+        Returns:
+            @ bp_columns_interest: DataFrame containing three columns - state, year, rating, beer_style. Each state repeats three times for each year - each entry represents one of top 3 favourite styles. 
+        """ 
         
         beer_preferences = self.beer_preferences.reset_index()
         

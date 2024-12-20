@@ -3,7 +3,15 @@ import pathlib
 import pandas as pd
 
 def state_winner_years(path_winners):
-    """ From party_winners_over_years.csv extract state, year and winner. """
+    """ 
+    From party_winners_over_years.csv extract state, year and winner. 
+    
+    Args:
+        @path_winners (pathlib.Path): Path to the party_winners_over_years.csv.
+        
+    Returns:
+        @winners_idx (pd.DataFrame): Each row contains state, year and party winner from that year (either Republican onr Democrat).
+    """
     
     # Load the data
     winners = pd.read_csv(path_winners)

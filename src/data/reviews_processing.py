@@ -18,7 +18,7 @@ class Reviews:
     def make_age_state_cols(self):
         """
         Function that merges user and reviews dataframes and adds age and state columns. Users outside US are filtered out. 
-        Age is approximated as 21 + (date_review - date_joining). -> 
+        Age is approximated as 21 + (date_review - date_joining).
         """
         
         # Load data
@@ -132,6 +132,14 @@ class Reviews:
     def aggregate_preferences_year(self, years, all_states=False):
         """
         Aggregate preferences for the specified year for beer styles that we identified.
+        Creates new DataFrame where each row represents one state and columns are e.g. IPA_2004, IPA_2005, IPA_2006, ... (like this for each one of 8 general beer styles that we selected) and each column representing mean of average ratings for that beer style.
+        
+        Args:
+            @years (list): Contains range of years that we're filtering out our data on.
+            @all_states (bool): Tells whether we need all states or only subset of them.
+            
+        Returns:
+            @merged_df (pd.DataFrame): DataFrame of described structure.
         """
         
         # Add general style to reviews from US reviews
@@ -173,6 +181,12 @@ class Reviews:
     def posneg_sentiment_aggregation_counts(self, all_states):
         """
         Aggregate percentages of positive and negative sentiments based on reviews per beer style, state and year. 
+        
+        Args:
+            @all_states (bool): Tells whether we need all states or only subset of them.
+            
+        Returns:
+            @filter_states (pd.DataFrame): Each row contains columns [state, beer_style, year, POSITIVE, NEGATIVE] i.e. what was the fraction of reviews with positive and negative sentiment for that beer style in that state in that year.
         """
         
         # Add general style to reviews from US reviews with sentiment
@@ -204,7 +218,19 @@ class Reviews:
         return filter_states
     
     def sentiment_to_wide(self, sentiment_drop, sentiment_keep, all_states, year_list):
-        """ Converts sentiment (either positive or negative) into wide format. """
+        """ 
+        Converts sentiment (either positive or negative) into wide format. 
+        
+        Args:
+            @sentiment_drop (str): Sentiment to drop from DataFrame. Either 'POSITIVE' or 'NEGATIVE'.
+            @sentiment_keep (str): Sentiment we are keeping in DataFrame. Oppositve from sentiment_drop.
+            @all_states (bool): Tells whether we need all states or only subset of them.
+            @year_list (list): Year range that we are filtering our data on.
+             
+        Returns:
+            @merged_df (pd.DataFrame): DataFrame where each row represents one state and columns are e.g. IPA_2004, IPA_2005, IPA_2006, ... (like this for each one of 8 general beer styles that we selected) and each column representing fraction of positive sentiment in that beer style reviews.
+        
+        """
         
         per_sentiment = self.posneg_sentiment_aggregation_counts(all_states)
         per_sentiment_filt = per_sentiment[per_sentiment['year'].isin(year_list)]
