@@ -5,6 +5,10 @@
 This study dives into the fascinating link between beer preferences and political identities in the U.S. By analyzing beer styles, emotions, sentiments, and key attributes through user reviews, we uncover patterns that go beyond taste. Using tools like LDA and sentiment analysis, we’ll map out how different states' beer choices align with political leanings. We'll also explore whether beer preferences shift during election years, especially in swing states. Can beer really reveal more than just flavour? Let's find out!
 
 
+## Datastory
+The datastory can be accessed on this [website](https://mikaelkalajdzic.github.io/adavengers-datastory/datastory) for free.
+
+
 ## Research Questions
 
 
@@ -96,15 +100,18 @@ The directory structure of the project looks like this:
 
 ```
 ├── data                        <- Project data files (original data)
-│   ├── generated                        <- Generated csv/pickle files
+│   ├──BeerAdvocate                     <- Placeholder for BeerAdvocate dataset
+│   ├── generated                       <- Generated csv/pickle files
+│
+├── fonts                       <- Addtional fonts
+│
+├── images                      <- Images (mask for cloud of words)
 │
 ├── src                         <- Source code
 │   ├── data                            <- Data directory (data processing, results stored in data/generated)
 │   ├── ipynb scripts                   <- Jupyter Notebooks for analyzing additional datasets
 │   ├── models                          <- Model directory
-│   ├── utils                           <- Utility directory
-│
-├── tests                       <- Tests of any kind
+│   ├── plots                           <- Scripts generating interactive plots
 │
 ├── results.ipynb               <- a well-structured notebook showing the results
 │
