@@ -10,9 +10,22 @@ from dash.dependencies import Input, Output
 from scipy.stats import pearsonr, spearmanr
 from plotly.subplots import make_subplots
 
+#=========================================================================================================================
+# .py script containing all the plotting functions
 
 def plot_correlation_matrix(results, beer_styles, year_list):
-    """ Plot correlation matrix of pearson coefficients of time series for beer styles between each pair of states. """
+    """ 
+    Plot correlation matrix of Pearson correlation of time series for beer styles between each pair of states. 
+    
+    Args:
+        @results (pd.DataFrame): DataFrame where each row represents one state and columns are e.g. IPA_2004, IPA_2005, IPA_2006, ... (like this for each one of 8 general beer styles that we selected) and each column representing mean of average ratings for that beer style.
+        @beer_styles (list): ['IPA', 'Stout', 'Lager']
+        @year_list (list): Range of years we're observing.
+        
+    Returns:
+        fig (go.Figure): Plot. 
+    
+    """
     dropdown_buttons = []
     heatmap_traces = []
 
@@ -83,7 +96,22 @@ def plot_correlation_matrix(results, beer_styles, year_list):
 
 
 def pairwise_trendplot(predef_state1, predef_state2, beer_styles, year_list, election_years, results, positive_sentiment, winners):
-    """ Function for plotting trend comparison for average rating and positive sentiment fraction for subset of pairwise states. """
+    """ 
+    Function for plotting trend comparison for average rating and positive sentiment fraction for subset of pairwise states. 
+    
+    Args:
+        @predef_state1 (list): List containing one part of predefined state pair. For us: ['New York', 'Arizona', 'New York', 'New York', 'Arizona', 'Nevada', 'Pennsylvania'].
+        @predef_state2 (list): List containing second part of predefined state pair. For us: ['California', 'Texas', 'Georgia', 'Arizona', 'South Carolina', 'Florida', 'Virginia'].
+        @beer_styles (list): ['IPA', 'Stout', 'Lager']
+        @year_list (list): Range of years of interest. In our case 2004-2016.
+        @election_years (list): [2004, 2008, 2012, 2016]
+        @results (pd.DataFrame): DataFrame where each row represents one state and columns are e.g. IPA_2004, IPA_2005, IPA_2006, ... (like this for each one of 8 general beer styles that we selected) and each column representing mean of average ratings for that beer style.
+        @positive_sentiment (pd.DataFrame): DataFrame where each row represents one state and columns are e.g. IPA_2004, IPA_2005, IPA_2006, ... (like this for each one of 8 general beer styles that we selected) and each column representing fraction of positive sentiment.
+        @winners (pd.DataFrame): [state, year, winner] format.
+        
+    Returns:
+        @fig (go.Figure): Plot.
+    """
     
     # Election winners in adequate format
     election_winners_by_state = winners.groupby('state').apply(lambda group: dict(zip(group['year'], group['winner']))).to_dict()
@@ -252,8 +280,14 @@ def pairwise_trendplot(predef_state1, predef_state2, beer_styles, year_list, ele
     
     return fig
         
+        
 def create_worldcloud(total_reviews):
-    """ Create a world cloud of total reviews after filtering out specific beer styles. """
+    """ 
+    Create a world cloud of total reviews after classifying beer styles into our 8 predefined general styles by keyword matching. 
+    
+    Args:
+        @total_reviews (pd.DataFrame): Reviews after classifying beer styles into our 8 predefined general styles by keyword matching.
+    """
     
     style = total_reviews['style'].value_counts().index
     
@@ -275,8 +309,18 @@ def create_worldcloud(total_reviews):
     output_path = "beer_types_word_cloud.png"
     wordcloud.to_file(output_path)
 
+
 def plot_review_count(total_reviews, year_list):
-    """ Create plot of total number of reviews from U.S. Users per beer style. """
+    """ 
+    Create plot of total number of reviews from U.S. Users per beer style. 
+    
+    Args:
+        @total_reviews (pd.DataFrame): Reviews after classifying beer styles into our 8 predefined general styles by keyword matching.
+        @year_list (list): Year range of interest. In our case 2004-2016.
+        
+    Returns:
+        fig (go.Fig): Plot.
+    """
     
     total_reviews_list = total_reviews[total_reviews['year'].isin(year_list)]
     total_reviews_grouped_by_style = total_reviews_list.groupby(by=['general_style', 'year']).size().reset_index(name='count')
@@ -288,8 +332,20 @@ def plot_review_count(total_reviews, year_list):
     
     return fig
 
+
 def plot_clustering(x, y, labels, states):
-    """ Plots PCA of states clustered based on time series of voting patterns per age groups. """
+    """ 
+    Plots PCA of states clustered based on time series of voting patterns per age groups. 
+    
+    Args:
+        @x (np.array): One dimension after data reduction using PCA.
+        @y (np.array): Second dimension after data reduction using PCA.
+        @labels (list): How each point is labelled after KMeans clustering.
+        @states (list): Contains state names/labels.
+        
+    Returns:
+        @fig (go.Figure): Plot.
+    """
     fig = go.Figure()
 
     # Add scatter points
@@ -320,8 +376,17 @@ def plot_clustering(x, y, labels, states):
     
     return fig
 
+
 def plot_sentiment_posneg_years(df):
-    """Plotting the fraction of positive/negative sentiment for each beer style and state over the years 2004-2016"""
+    """
+    Plotting the fraction of positive/negative sentiment for each beer style and state over the years 2004-2016.
+    
+    Args:
+        df (pd.DataFrame): DataFrame of positive/negative sentiment in long format.
+    
+    Returns:
+        fig (go.Figure): Plot.
+    """
     years = sorted(df['year'].unique())
     beer_styles = df['general_style'].unique()
 
@@ -406,8 +471,17 @@ def plot_sentiment_posneg_years(df):
     
     return fig
 
+
 def plot_sentiment_posneg_states(df):
-    """Plotting the fraction of positive/negative sentiment for each beer style and state over the years 2004-2016"""
+    """ 
+    Plotting the fraction of positive/negative sentiment for each beer style and state over the years 2004-2016.
+    
+    Args:
+        df (pd.DataFrame): DataFrame of positive/negative sentiment in long format.
+    
+    Returns:
+        fig (go.Figure): Plot.
+    """
     states = sorted(df['state'].unique())  
     beer_styles = df['general_style'].unique()
     years = sorted(df['year'].unique())
@@ -490,14 +564,37 @@ def plot_sentiment_posneg_states(df):
     
     return fig
 
+
 def get_beer_styles_data(results, state, beer_style, year_list):
-        
-        style_names = [f"{beer_style}_{year}" for year in year_list]
-        return results.loc[state, style_names]
+    """ 
+    Returns trend of ratings/fraction of positive sentiment for specific beer style and state. 
+    
+    Args:
+        @results (pd.DataFrame): DataFrame where each row represents one state and columns are e.g. IPA_2004, IPA_2005, IPA_2006, ... (like this for each one of 8 general beer styles that we selected) and each column representing mean of average ratings/fraction of positive sentiment for that beer style.
+        @state (str): Specific state, e.g. Calfornia, New York.
+        @beer_style (str): Specific beer style, e.g. IPA, Pale Ale, Stout...
+        @year_list (list): Range of years of interest.
+    
+    Returns:
+        pd.DataFrame: Trend of ratings/fraction of positive sentiment for specific beer style and state.
+    """
+    style_names = [f"{beer_style}_{year}" for year in year_list]
+    return results.loc[state, style_names]
+    
     
 class BeerStyleTrendsDashApp:
+    """ Class for Interactive Dash app plots. """
     def __init__(self, beer_preferences, winners, get_beer_styles_data, kind):
+        """
+        Initializes object of the class.
         
+        Args:
+            @beer_preferences (pd.DataFrame): DataFrame where each row represents one state and columns are e.g. IPA_2004, IPA_2005, IPA_2006, ... (like this for each one of 8 general beer styles that we selected) and each column representing mean of average ratings/fraction of positive sentiment for that beer style.
+            @winners (pd.DataFrame): DataFrame of [state, year, winner] format.
+            @get_beer_styles_data (fncn): Function to get trend for specific state and beer style.
+            @kind (str): Either 'Ratings' or 'Fraction of Positive Sentiment'.
+            
+        """
         # Initialize the App
         self.app = Dash(__name__)
         self.beer_preferences = beer_preferences
@@ -513,6 +610,7 @@ class BeerStyleTrendsDashApp:
         
         
     def setup_layout(self):
+        """ Builds setup (layout) of app - titles, buttons, plots. """
         
         # Build the layout for the app
         pre_def_pearson, _ = pearsonr(self.get_beer_styles_data(self.beer_preferences, 'New York', 'IPA', self.year_list), self.get_beer_styles_data(self.beer_preferences, 'California', 'IPA', self.year_list))
@@ -565,7 +663,14 @@ class BeerStyleTrendsDashApp:
         self.setup_callbacks()
     
     def setup_callbacks(self):
+        """ 
+        Allows for dynamic changes of plot when one of the butttons is pressed. 
         
+        Returns:
+            @fig (go.Figure): Plot.
+            @pearson_text (str): Text - Pearson correlation.
+            @spearman_text (str): Text - Spearman correlation.
+        """
         @self.app.callback(
         [
             Output('beer-ratings-graph', 'figure'),
@@ -601,7 +706,7 @@ class BeerStyleTrendsDashApp:
                 hoverinfo='text',
                 showlegend=False)
     
-    
+            # Calculates Pearson and Spearman correlation coefficient to update the textboxes
             pearsoncorr, _ = pearsonr(self.get_beer_styles_data(self.beer_preferences, state1, style, self.year_list), self.get_beer_styles_data(self.beer_preferences, state2, style, self.year_list))
             spearmancorr, _ = spearmanr(self.get_beer_styles_data(self.beer_preferences, state1, style, self.year_list), self.get_beer_styles_data(self.beer_preferences, state2, style, self.year_list))
     
@@ -621,12 +726,25 @@ class BeerStyleTrendsDashApp:
             return figure, pearson_text, spearman_text
     
     def run(self, port):
+        """ 
+        For running the app.
+        
+        Args:
+            @port (int): Port number for openning multiple apps at the same time.
+        """
         # Run App
         self.app.run_server(mode='inline', port=port)
 
 
 def plot_beer_pref_trends(beer_ratings, winners, states):
-    """ For the specified states plot beer trends for each beer styles. """
+    """ 
+    For the specified states plot beer trends for each beer styles. 
+    
+    Args:
+        @beer_ratings (pd.DataFrame): DataFrame where each row represents one state and columns are e.g. IPA_2004, IPA_2005, IPA_2006, ... (like this for each one of 8 general beer styles that we selected) and each column representing mean of average ratings/fraction of positive sentiment for that beer style.
+        @winners (pd.DataFrame): DataFrame of [state, year, winner] format.
+        @states (list): States of interest.
+    """
     styles = ['IPA', 'Lager', 'Other Ale', 'Pale Ale', 'Pilsner', 'Porter', 'Red/Amber Ale', 'Stout']
     year_list = list(np.arange(2004, 2017, 1, dtype=int))
 
