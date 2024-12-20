@@ -38,7 +38,12 @@ These datasets provide the percentage of Democrat and Republican votes for age g
 We have separated the project into 3 tasks, each of them corresponding to one of the research questions above.
 
 
-### Task 1. Characterizing beer preferences
+### Part 1. Characterizing beer preferences
+
+We analyzed the beer reviews dataset. To define diverse beer preferences, we will examine different dimensions such as beer style, sentiment and overall score of a beer. The goal in this part is to get a better sense of the general beer styles that we have.
+We regrouped the 108 unique beer styles into 8 general common beer categories. We tried to use data to understand what those 8 categories of beer mean, what are the beer characteristics that differ? (we defined 5 semantical characteristics about a beer : ( 1. Hop Intensity 2. Malt Profile 3. Body/Texture 4. Alcohol Strength 5. Carbonation) 
+To measure how a general beer style is having a specific characteristic we measured the cosine similarity between that characteristic and the average reviews of that general beer style in an embedding space. 
+But before doing this we verified if the beer reviews talk about the beer characteristic or not? To do this we studied the topics that are expressed in the reviews using an LDA model.
 
 
 ### Task 2. Beer preferences and political affiliation - a lookalike analysis
