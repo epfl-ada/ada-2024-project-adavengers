@@ -7,6 +7,49 @@ import pandas as pd
 # Functions and Class called in us_states_visualisation.ipynb Notebook for Visualizations
 # Examples of use can be found there
 
+def plot_vote_distribution(data, age_groups):
+    """
+    Creates interative plot of votes distribution. There are 3 subplots, each for specific age group and slider to shuflle between years. Each bar representes single state.
+    
+    Args:
+        @data (pd.DataFrame): Data reshaped in long format for plotting. 
+        @age_groups (list): ["18_29", "30_44", "45_64"]
+        
+    Returns:
+        @fig (go.Figure): Plot.
+    """
+    
+    # Create the plot
+    fig = px.bar(
+        data,
+        x="State",
+        y="Value",
+        color="Party",  # Color split for Democrat and Republican
+        barmode="stack",  # Stacked bar sections
+        facet_col="Age_Group",  # Separate subplots for each age group
+        animation_frame="Year",  # Interactive slider for years
+        title="Vote Distribution by State, Age Group, and Year",
+        labels={"Value": "Vote Share", "State": "", "Age_Group": "Age Group"},
+        height=450
+    )
+
+    # Adjust layout for better spacing
+    fig.update_layout(
+        xaxis_tickangle=-45,  
+        title_x=0.5,          
+        bargap=0.4,           
+    )
+
+    # Adjust x-axes for each age group
+    for i in range(len(age_groups)):
+        fig.update_xaxes(
+            tickangle=-45,         
+            row=1, col=i + 1
+        )
+
+    # Show the interactive plot
+    return fig
+
 def barplot_threefav_styles_compare(fav_three, state1_list, state2_list):
     """ 
     Creates a figure with barplot of top 3 favourite beer styles over years for comparison between predefined pairs of states.

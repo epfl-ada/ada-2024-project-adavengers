@@ -5,7 +5,18 @@ import numpy as np
 import plotly.express as px
 
 def preprocess_data(data_path, path_winners, year):
-    """ Preprocess data - calculate to sum to one. Remove columns that are not in our interest. """
+    """ 
+    Preprocess voting data per age bracket for democrats and republicans - calculate to sum to one. Remove columns that are not in our interest. 
+    
+    Args:
+        @data_path (pathlib.Path): Path to one of files of type year_per_age_region.csv.
+        @path_winners (pathlib.Path): Path to party_winners_over_years.csv.
+        @year (int): Specific year from which we are extracting data.
+        
+    Returns:
+        @age_range_ohe_drop (pd.DataFrame): DataFrame of described properties. 
+        @age_winners (pd.DataFrame): Initial DataFrame with all dropped columns. 
+    """
     # Load data
     age = pd.read_csv(data_path, delimiter=';')
     
@@ -45,7 +56,11 @@ def preprocess_data(data_path, path_winners, year):
     return age_range_ohe_drop, age_winners
 
 def compute_correlation(data):
-    """ Computes correlation on preprocessed data. """
+    """ 
+    *This function was part of initial idea, now not used in the code anywhere. *
+    Computes correlation on preprocessed data. Extracts pairs of states that had positive/negative correlations.
+    
+    """
     
     correlation_matrix = data.T.corr()
     
@@ -66,7 +81,10 @@ def compute_correlation(data):
     return correlations, positive_correlations_sorted, negative_correlations_sorted
 
 def merge_winners_and_compare(path_winners, year, correlations):
-    """ Merge correlations with winners. """
+    """ 
+    *This function was part of initial idea, now not used in the code anywhere. *
+    Merge correlations with winners. 
+    """
     
     # Load winners
     party_winners = pd.read_csv(path_winners)
@@ -91,15 +109,28 @@ def merge_winners_and_compare(path_winners, year, correlations):
     return merge_winners_rename, same, different
 
 def interpolate_votes(voting_data_merged):
-    """ Interpolate voting percentages beyond election years. """
+    """ 
+    Interpolate voting percentages beyond election years. 
+    
+    Args:
+        @voting_data_merged (pd.DataFrame): Voting data in wide format, i.e. columns include year information, e.g. pop18_29_republican_2004.
+    
+    Returns:
+        @final_data (pd.DataFrame): DataFrame containing interpolated columns for years beyond election ones.
+    """
+    
+    # We need these two None because for one state we are going over columns and interpolating them to contain more years
+    # data_columns will interpolate for one state and then data_rows will contatenate for all the states together
     data_columns = None
     data_rows = None
     categories = ['pop18_29', 'pop30_44', 'pop45_64']
     list_years = [2004, 2008, 2012, 2016]
     states = voting_data_merged.index
+    
     for state in states:
         for category in categories:
-        
+            
+            # Extract state and cateogry (age bracket for interpolating)
             state_data = voting_data_merged.loc[state]
             categ_year = [f"{category}_democrat_{year}" for year in list_years]
             
@@ -109,6 +140,7 @@ def interpolate_votes(voting_data_merged):
             all_years = range(min(list_years), max(list_years) + 1)
             interpolated = series.reindex(all_years).interpolate(method='linear')
             
+            # Republican are 1-Democrat
             rnm_indexes_democr = [f"{category}_democrat_{year}" for year in interpolated.index]
             rnm_indexes_repub = [f"{category}_republican_{year}" for year in interpolated.index]
             interpolated.index = rnm_indexes_democr
@@ -118,6 +150,8 @@ def interpolate_votes(voting_data_merged):
             
             df_democr = interpolated.to_frame().T
             df_repub = republican.to_frame().T
+            
+            # Concatenates inteprolated Republican and Democrat columns for one state
             if data_columns is None:
                 data_columns = df_democr
             
@@ -126,6 +160,7 @@ def interpolate_votes(voting_data_merged):
             
             data_columns = pd.concat([data_columns, df_repub], axis=1)
         
+        # Concatenating them to all other states
         if data_rows is None:
             data_rows = data_columns
         else:
@@ -139,7 +174,9 @@ def interpolate_votes(voting_data_merged):
     
 
 def merge_voting_by_years(path_to_data=""):
-
+    """ 
+    Calls preprocess_data() to merge .csv files corresponding to each election year. Subset of states we're left with are only ones common to all .csv files (only ones that have exit polls results in every election year).
+    """
     election_years = [2004, 2008, 2012, 2016]
     path_winners = path_to_data / "data/generated/party_winners_over_years.csv"
     voting_data_merged = []
@@ -161,13 +198,27 @@ def merge_voting_by_years(path_to_data=""):
 # Visualizations
 
 def reshape_data(df, years, age_groups):
-    """Reshape the data into long format for plotting when State is the index."""
+    """
+    Reshape the data into long format for plotting when State is the index.
+    
+    Args:
+        df (pd.DataFrame): Voting data in long format where year is appended to column name.
+        years (list): List of years of interest.
+        age_groups (list): ["18_29", "30_44", "45_64"]
+        
+    Returns:
+        pd.DataFrame: In long format.
+    """
+    
     records = []
     for year in years:
         for age_group in age_groups:
+            
             dem_col = f"pop{age_group}_democrat_{year}"
             rep_col = f"pop{age_group}_republican_{year}"
-            for state in df.index:  # Use the index directly
+            
+            for state in df.index: 
+                
                 records.append({
                     "State": state,
                     "Age_Group": age_group.replace('_', '-'),
@@ -175,6 +226,7 @@ def reshape_data(df, years, age_groups):
                     "Party": "Democrat",
                     "Value": df.loc[state, dem_col],
                 })
+                
                 records.append({
                     "State": state,
                     "Age_Group": age_group.replace('_', '-'),
@@ -182,39 +234,7 @@ def reshape_data(df, years, age_groups):
                     "Party": "Republican",
                     "Value": df.loc[state, rep_col],
                 })
+    
     return pd.DataFrame(records)
 
-def plot_vote_distribution(data, age_groups, years):
-    # Reshape data
-    reshaped_data = reshape_data(data, years, age_groups)
-    # Create the plot
-    fig = px.bar(
-        reshaped_data,
-        x="State",
-        y="Value",
-        color="Party",  # Color split for Democrat and Republican
-        barmode="stack",  # Stacked bar sections
-        facet_col="Age_Group",  # Separate subplots for each age group
-        animation_frame="Year",  # Interactive slider for years
-        title="Vote Distribution by State, Age Group, and Year",
-        labels={"Value": "Vote Share", "State": "", "Age_Group": "Age Group"},
-        height=450
-    )
-
-    # Adjust layout for better spacing
-    fig.update_layout(
-        xaxis_tickangle=-45,  
-        title_x=0.5,          
-        bargap=0.4,           
-    )
-
-    # Adjust x-axes for each age group
-    for i in range(len(age_groups)):
-        fig.update_xaxes(
-            tickangle=-45,         
-            row=1, col=i + 1
-        )
-
-    # Show the interactive plot
-    return fig
     
