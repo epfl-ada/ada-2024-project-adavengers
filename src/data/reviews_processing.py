@@ -24,7 +24,7 @@ class Reviews:
         # Load data
         
         # Different handling of pkl and csv files
-        if self.reviews_path.split('.')[1] == 'csv':
+        if str(self.reviews_path).split('.')[-1] == 'csv':
             reviews_df = pd.read_csv(self.reviews_path)
         else:
             reviews_df = pd.read_pickle(self.reviews_path)

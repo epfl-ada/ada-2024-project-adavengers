@@ -173,17 +173,17 @@ def interpolate_votes(voting_data_merged):
     return final_data
     
 
-def merge_voting_by_years(path_to_data=""):
+def merge_voting_by_years(data_dir_path):
     """ 
     Calls preprocess_data() to merge .csv files corresponding to each election year. Subset of states we're left with are only ones common to all .csv files (only ones that have exit polls results in every election year).
     """
     election_years = [2004, 2008, 2012, 2016]
-    path_winners = path_to_data / "data/generated/party_winners_over_years.csv"
+    path_winners = data_dir_path / "generated" / "party_winners_over_years.csv"
     voting_data_merged = []
 
     for ind_year, year in enumerate(election_years):
 
-        data_path = path_to_data / f"data/{year}_per_age_region.csv"
+        data_path = data_dir_path / f"{year}_per_age_region.csv"
 
         processed_data, _ = preprocess_data(data_path, path_winners, year)
         

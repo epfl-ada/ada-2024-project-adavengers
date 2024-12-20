@@ -141,7 +141,7 @@ if __name__ == '__main__':
     parser = BeerAdvocateParser()
     data_dir_path = pathlib.Path("../../data")
 
-    src_path = '/Users/david/Beers/BeerAdvocate/reviews.txt' # data_dir_path / "reviews.txt"
+    src_path = '/Users/david/BeerAdvocate/reviews.txt' # data_dir_path / "reviews.txt"
     dst_path = data_dir_path / 'generated' / "reviews_df.csv"
 
     parser.generate_result(src_path, dst_path)
