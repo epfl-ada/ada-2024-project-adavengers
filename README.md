@@ -1,6 +1,6 @@
 # Pints & Politics: Analyzing Beer Preferences Across U.S. States
 
-## Link to the [data story](https://mikaelkalajdzic.github.io/adavengers-datastory/)
+## Link to the [data story](https://mikaelkalajdzic.github.io/adavengers-datastory/datastory) ✨
 
 ## Abstract
 
